@@ -1,4 +1,4 @@
-import { Component, computed, signal, OnInit, HostListener, ElementRef } from '@angular/core';
+import { Component, signal, OnInit, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WorkOrderService } from '../../services/work-order.service';
 import { WorkCenter, WorkOrder, Timescale } from '../../models';
@@ -17,7 +17,7 @@ export class TimelineComponent implements OnInit {
   workOrders: WorkOrder[] = [];
 
   timescale = signal<Timescale>('Month');
-  timescaleOptions: Timescale[] = ['Hour', 'Day', 'Week', 'Month'];
+  timescaleOptions: Timescale[] = ['Day', 'Week', 'Month'];
   showTimescaleDropdown = signal(false);
 
   columns: { label: string; date: Date }[] = [];
@@ -43,36 +43,125 @@ export class TimelineComponent implements OnInit {
     this.workOrders = this.workOrderService.getWorkOrders();
   }
 
-  // ...existing code...
+  // Returns the Monday of the week containing the given date
+  getMondayOfWeek(date: Date): Date {
+    const d = new Date(date);
+    const day = d.getDay(); // 0=Sun, 1=Mon ... 6=Sat
+    const diff = day === 0 ? -6 : 1 - day;
+    d.setDate(d.getDate() + diff);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+
+  // Rebuild columns whenever the timescale changes
   generateColumns() {
     this.columns = [];
     const now = new Date();
-    // Start 4 months before current month
-    const start = new Date(now.getFullYear(), now.getMonth() - 4, 1);
-    const count = 12;
+    const ts = this.timescale();
 
-    for (let i = 0; i < count; i++) {
-      const date = new Date(start.getFullYear(), start.getMonth() + i, 1);
-      this.columns.push({
-        label: date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
-        date,
-      });
+    if (ts === 'Month') {
+      // 12 months centred on today (4 before, 7 after)
+      const start = new Date(now.getFullYear(), now.getMonth() - 4, 1);
+      for (let i = 0; i < 12; i++) {
+        const date = new Date(start.getFullYear(), start.getMonth() + i, 1);
+        this.columns.push({
+          label: date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+          date,
+        });
+      }
+    } else if (ts === 'Week') {
+      // 26 weeks centred on current week (13 before, 12 after)
+      const monday = this.getMondayOfWeek(now);
+      const start = new Date(monday.getTime() - 13 * 7 * 24 * 60 * 60 * 1000);
+      for (let i = 0; i < 26; i++) {
+        const date = new Date(start.getTime() + i * 7 * 24 * 60 * 60 * 1000);
+        this.columns.push({
+          label: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+          date,
+        });
+      }
+    } else {
+      // Day: 60 days centred on today (30 before, 29 after)
+      const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30);
+      for (let i = 0; i < 60; i++) {
+        const date = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+        this.columns.push({
+          label: date.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' }),
+          date,
+        });
+      }
     }
   }
 
-  isCurrentMonth(date: Date): boolean {
+  // Highlights the column that contains today
+  isCurrentColumn(date: Date): boolean {
     const now = new Date();
-    return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+    const ts = this.timescale();
+
+    if (ts === 'Month') {
+      return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+    } else if (ts === 'Week') {
+      return this.getMondayOfWeek(now).getTime() === this.getMondayOfWeek(date).getTime();
+    } else {
+      return (
+        date.getDate() === now.getDate() &&
+        date.getMonth() === now.getMonth() &&
+        date.getFullYear() === now.getFullYear()
+      );
+    }
   }
-  // ...existing code...
+
+  // Label shown in the current-column badge
+  get currentColumnLabel(): string {
+    switch (this.timescale()) {
+      case 'Month': return 'Current month';
+      case 'Week':  return 'Current week';
+      case 'Day':   return 'Today';
+      default:      return '';
+    }
+  }
+
+  // Left position (%) of today's vertical indicator line
+  get todayLineLeft(): string {
+    if (!this.columns.length) return '-1px';
+
+    const firstCol = this.columns[0].date;
+    const lastCol = this.columns[this.columns.length - 1].date;
+    const totalStart = firstCol.getTime();
+
+    let totalEnd: number;
+    if (this.timescale() === 'Month') {
+      totalEnd = new Date(lastCol.getFullYear(), lastCol.getMonth() + 1, 1).getTime();
+    } else if (this.timescale() === 'Week') {
+      totalEnd = lastCol.getTime() + 7 * 24 * 60 * 60 * 1000;
+    } else {
+      totalEnd = lastCol.getTime() + 24 * 60 * 60 * 1000;
+    }
+
+    const todayTime = new Date().getTime();
+    if (todayTime < totalStart || todayTime > totalEnd) return '-1px';
+
+    const leftPercent = ((todayTime - totalStart) / (totalEnd - totalStart)) * 100;
+    return `${leftPercent}%`;
+  }
+
+  // Minimum column width depending on zoom level
+  get colMinWidth(): string {
+    switch (this.timescale()) {
+      case 'Day':  return '50px';
+      case 'Week': return '80px';
+      default:     return '150px';
+    }
+  }
 
   getWorkOrdersForCenter(workCenterId: string): WorkOrder[] {
-    return this.workOrders.filter((wo) => wo.workCenterId === workCenterId);
+    return this.workOrders.filter((wo) => wo.data.workCenterId === workCenterId);
   }
 
   selectTimescale(t: Timescale) {
     this.timescale.set(t);
     this.showTimescaleDropdown.set(false);
+    this.generateColumns(); // Rebuild columns for new zoom level
   }
 
   toggleTimescaleDropdown() {
@@ -88,12 +177,14 @@ export class TimelineComponent implements OnInit {
 
   onCellClick(workCenterId: string, colDate: Date) {
     if (this.isPanelOpen()) return;
+
+    // Pre-fill start = clicked date, end = start + 7 days (per spec)
+    const startDate = new Date(colDate);
     const endDate = new Date(colDate);
-    endDate.setMonth(endDate.getMonth() + 1);
-    endDate.setDate(endDate.getDate() - 1);
+    endDate.setDate(endDate.getDate() + 7);
 
     this.selectedWorkCenterId.set(workCenterId);
-    this.prefillStartDate.set(colDate);
+    this.prefillStartDate.set(startDate);
     this.prefillEndDate.set(endDate);
     this.selectedWorkOrder.set(null);
     this.isPanelOpen.set(true);
@@ -101,7 +192,7 @@ export class TimelineComponent implements OnInit {
 
   onEditWorkOrder(wo: WorkOrder) {
     this.selectedWorkOrder.set(wo);
-    this.selectedWorkCenterId.set(wo.workCenterId);
+    this.selectedWorkCenterId.set(wo.data.workCenterId);
     this.prefillStartDate.set(null);
     this.prefillEndDate.set(null);
     this.isPanelOpen.set(true);

@@ -1,16 +1,22 @@
-export type WorkOrderStatus = 'Open' | 'In progress' | 'Complete' | 'Blocked';
-export type Timescale = 'Hour' | 'Day' | 'Week' | 'Month';
+export type WorkOrderStatus = 'open' | 'in-progress' | 'complete' | 'blocked';
+export type Timescale = 'Day' | 'Week' | 'Month';
 
 export interface WorkCenter {
-  id: string;
-  name: string;
+  docId: string;
+  docType: 'workCenter';
+  data: {
+    name: string;
+  };
 }
 
 export interface WorkOrder {
-  id: string;
-  name: string;
-  workCenterId: string;
-  status: WorkOrderStatus;
-  startDate: Date;
-  endDate: Date;
+  docId: string;
+  docType: 'workOrder';
+  data: {
+    name: string;
+    workCenterId: string;
+    status: WorkOrderStatus;
+    startDate: string; // ISO format YYYY-MM-DD
+    endDate: string;   // ISO format YYYY-MM-DD
+  };
 }

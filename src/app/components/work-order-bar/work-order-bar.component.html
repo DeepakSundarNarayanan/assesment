@@ -1,7 +1,7 @@
 <div class="work-order-bar" [ngClass]="statusClass" [ngStyle]="barStyle">
   <div class="bar-content">
-    <span class="bar-name">{{ workOrder.name }}</span>
-    <span class="bar-status-badge" [ngClass]="statusClass">{{ workOrder.status }}</span>
+    <span class="bar-name">{{ workOrder.data.name }}</span>
+    <span class="bar-status-badge" [ngClass]="statusClass">{{ statusLabel }}</span>
     <button class="menu-btn" (click)="toggleMenu($event)">
       <i class="bi bi-three-dots"></i>
     </button>

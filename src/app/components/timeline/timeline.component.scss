@@ -3,7 +3,7 @@
   background: #fff;
 }
 
-.navbar {
+.app-navbar {
   padding: 16px 32px;
   border-bottom: 1px solid #f0f0f0;
 
@@ -81,8 +81,6 @@
   }
 }
 
-// ...existing code...
-
 .timeline-wrapper {
   border: 1px solid #e8e8e8;
   border-radius: 8px;
@@ -100,42 +98,6 @@
   z-index: 10;
   overflow: visible;
 }
-
-.badge-row {
-  display: flex;
-  position: relative;
-  height: 0;
-  z-index: 9;
-
-  .col-workcenter {
-    min-width: 200px;
-    max-width: 200px;
-    flex-shrink: 0;
-  }
-
-  .col-month-badge {
-    flex: 1;
-    min-width: 150px;
-    position: relative;
-    height: 0;
-
-    .current-badge {
-      position: absolute;
-      top: -13px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #e8e4ff;
-      color: #7B72E9;
-      font-size: 11px;
-      font-weight: 500;
-      padding: 4px 14px;
-      border-radius: 20px;
-      white-space: nowrap;
-      z-index: 20;
-    }
-  }
-}
-// ...existing code...
 
 /* Row */
 .grid-row {
@@ -186,9 +148,11 @@
   text-align: center;
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 48px;
+  overflow: visible;
 
   &:last-child { border-right: none; }
 
@@ -196,6 +160,22 @@
     background: #f0eeff;
     color: #5C53E5;
     font-weight: 500;
+  }
+
+  // Badge sits below the header text, protruding out of the header row
+  .current-badge {
+    position: absolute;
+    bottom: -13px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #e8e4ff;
+    color: #7B72E9;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 14px;
+    border-radius: 20px;
+    white-space: nowrap;
+    z-index: 20;
   }
 }
 
@@ -219,13 +199,9 @@
 
       &:last-child { border-right: none; }
 
-      &.current-month-col {
-        background: #f0eeff;
-      }
+      &.current-month-col { background: #f0eeff; }
 
-      &:hover {
-        background: #ebe8ff;
-      }
+      &:hover { background: #ebe8ff; }
     }
   }
 
@@ -238,5 +214,17 @@
     app-work-order-bar {
       pointer-events: all;
     }
+  }
+
+  // Today vertical indicator line
+  .today-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #5C53E5;
+    z-index: 4;
+    pointer-events: none;
+    transform: translateX(-50%);
   }
 }

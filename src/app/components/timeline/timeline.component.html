@@ -1,6 +1,6 @@
 <div class="page-wrapper">
   <!-- Navbar -->
-  <div class="navbar">
+  <div class="app-navbar">
     <span class="brand">NAOLOGIC</span>
   </div>
 
@@ -32,24 +32,18 @@
     <div class="timeline-wrapper">
       <div class="timeline-scroll">
 
-        <!-- Header Row -->
+        <!-- Header Row — badge lives inside the header cell to avoid z-index overlap -->
         <div class="grid-header">
           <div class="col-workcenter header-cell">Work Center</div>
           <div
             class="col-month header-cell"
             *ngFor="let col of columns"
-            [class.current-month-col]="isCurrentMonth(col.date)">
+            [style.min-width]="colMinWidth"
+            [class.current-month-col]="isCurrentColumn(col.date)">
             {{ col.label }}
-          </div>
-        </div>
-
-        <!-- Current Month Badge Row -->
-        <div class="badge-row">
-          <div class="col-workcenter"></div>
-          <div
-            class="col-month-badge"
-            *ngFor="let col of columns">
-            <span class="current-badge" *ngIf="isCurrentMonth(col.date)">Current month</span>
+            <span class="current-badge" *ngIf="isCurrentColumn(col.date)">
+              {{ currentColumnLabel }}
+            </span>
           </div>
         </div>
 
@@ -57,7 +51,7 @@
         <div class="grid-row" *ngFor="let wc of workCenters">
 
           <!-- Work Center Name -->
-          <div class="col-workcenter row-cell">{{ wc.name }}</div>
+          <div class="col-workcenter row-cell">{{ wc.data.name }}</div>
 
           <!-- Month Cells + Bars -->
           <div class="col-months-wrapper">
@@ -67,17 +61,22 @@
               <div
                 class="bg-cell"
                 *ngFor="let col of columns"
-                [class.current-month-col]="isCurrentMonth(col.date)"
-                (click)="onCellClick(wc.id, col.date)">
+                [style.min-width]="colMinWidth"
+                [class.current-month-col]="isCurrentColumn(col.date)"
+                (click)="onCellClick(wc.docId, col.date)">
               </div>
             </div>
+
+            <!-- Today indicator line -->
+            <div class="today-line" [style.left]="todayLineLeft"></div>
 
             <!-- Work Order Bars -->
             <div class="bars-layer">
               <app-work-order-bar
-                *ngFor="let wo of getWorkOrdersForCenter(wc.id)"
+                *ngFor="let wo of getWorkOrdersForCenter(wc.docId)"
                 [workOrder]="wo"
                 [columns]="columns"
+                [timescale]="timescale()"
                 (edit)="onEditWorkOrder($event)"
                 (delete)="onDeleteWorkOrder($event)">
               </app-work-order-bar>

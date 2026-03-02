@@ -33,42 +33,59 @@
       </span>
     </div>
 
-    <!-- Status Dropdown -->
+    <!-- Status (ng-select) -->
     <div class="form-group">
       <label>Status</label>
-      <div class="custom-select-wrapper">
-        <select formControlName="status" class="form-input status-select"
-          [ngClass]="getStatusClass(form.get('status')?.value)">
-          <option *ngFor="let s of statusOptions" [value]="s">{{ s }}</option>
-        </select>
-      </div>
+      <ng-select
+        formControlName="status"
+        [items]="statusOptions"
+        bindLabel="label"
+        bindValue="value"
+        [clearable]="false"
+        [searchable]="false"
+        class="status-select">
+      </ng-select>
     </div>
 
-    <!-- Start Date -->
-    <div class="form-group">
-      <label>Start Date</label>
-      <input
-        type="date"
-        formControlName="startDate"
-        class="form-input"
-        [class.error]="form.get('startDate')?.invalid && form.get('startDate')?.touched"/>
-      <span class="error-msg"
-        *ngIf="form.get('startDate')?.invalid && form.get('startDate')?.touched">
-        Start date is required
-      </span>
-    </div>
-
-    <!-- End Date -->
+    <!-- End Date (ngb-datepicker) — design shows End Date above Start Date -->
     <div class="form-group">
       <label>End Date</label>
-      <input
-        type="date"
-        formControlName="endDate"
-        class="form-input"
-        [class.error]="form.get('endDate')?.invalid && form.get('endDate')?.touched"/>
+      <div class="date-input-group"
+        [class.error]="form.get('endDate')?.invalid && form.get('endDate')?.touched">
+        <input
+          class="form-input date-input"
+          formControlName="endDate"
+          ngbDatepicker
+          #endPicker="ngbDatepicker"
+          placeholder="DD.MM.YYYY"/>
+        <button class="calendar-toggle-btn" (click)="endPicker.toggle()" type="button">
+          <i class="bi bi-calendar3"></i>
+        </button>
+      </div>
       <span class="error-msg"
         *ngIf="form.get('endDate')?.invalid && form.get('endDate')?.touched">
         End date is required
+      </span>
+    </div>
+
+    <!-- Start Date (ngb-datepicker) -->
+    <div class="form-group">
+      <label>Start Date</label>
+      <div class="date-input-group"
+        [class.error]="form.get('startDate')?.invalid && form.get('startDate')?.touched">
+        <input
+          class="form-input date-input"
+          formControlName="startDate"
+          ngbDatepicker
+          #startPicker="ngbDatepicker"
+          placeholder="DD.MM.YYYY"/>
+        <button class="calendar-toggle-btn" (click)="startPicker.toggle()" type="button">
+          <i class="bi bi-calendar3"></i>
+        </button>
+      </div>
+      <span class="error-msg"
+        *ngIf="form.get('startDate')?.invalid && form.get('startDate')?.touched">
+        Start date is required
       </span>
     </div>
 

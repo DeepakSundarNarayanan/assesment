@@ -1,13 +1,41 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, Injectable } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { NgSelectModule } from '@ng-select/ng-select';
+import {
+  NgbDatepickerModule,
+  NgbDateStruct,
+  NgbDateParserFormatter,
+} from '@ng-bootstrap/ng-bootstrap';
 import { WorkOrder, WorkOrderStatus, WorkCenter } from '../../models/index';
 import { WorkOrderService } from '../../services/work-order.service';
+
+// Custom formatter: displays dates as DD.MM.YYYY
+@Injectable()
+export class DotDateFormatter extends NgbDateParserFormatter {
+  parse(value: string): NgbDateStruct | null {
+    if (!value) return null;
+    const parts = value.trim().split('.');
+    if (parts.length !== 3) return null;
+    return { day: +parts[0], month: +parts[1], year: +parts[2] };
+  }
+  format(date: NgbDateStruct | null): string {
+    if (!date) return '';
+    return (
+      String(date.day).padStart(2, '0') +
+      '.' +
+      String(date.month).padStart(2, '0') +
+      '.' +
+      date.year
+    );
+  }
+}
 
 @Component({
   selector: 'app-work-order-panel',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, NgSelectModule, NgbDatepickerModule],
+  providers: [{ provide: NgbDateParserFormatter, useClass: DotDateFormatter }],
   templateUrl: './work-order-panel.component.html',
   styleUrls: ['./work-order-panel.component.scss'],
 })
@@ -23,7 +51,13 @@ export class WorkOrderPanelComponent implements OnInit {
   workCenters: WorkCenter[] = [];
   overlapError = false;
 
-  statusOptions: WorkOrderStatus[] = ['Open', 'In progress', 'Complete', 'Blocked'];
+  // Objects so ng-select can show "In progress" while storing 'in-progress'
+  statusOptions: { value: WorkOrderStatus; label: string }[] = [
+    { value: 'open',        label: 'Open' },
+    { value: 'in-progress', label: 'In progress' },
+    { value: 'complete',    label: 'Complete' },
+    { value: 'blocked',     label: 'Blocked' },
+  ];
 
   constructor(
     private fb: FormBuilder,
@@ -33,41 +67,47 @@ export class WorkOrderPanelComponent implements OnInit {
   ngOnInit() {
     this.workCenters = this.workOrderService.getWorkCenters();
     this.form = this.fb.group({
-      name: [this.workOrder?.name || '', Validators.required],
-      workCenterId: [this.workOrder?.workCenterId || this.workCenterId || '', Validators.required],
-      status: [this.workOrder?.status || 'Open', Validators.required],
+      name: [this.workOrder?.data.name || '', Validators.required],
+      workCenterId: [this.workOrder?.data.workCenterId || this.workCenterId || '', Validators.required],
+      status: [this.workOrder?.data.status || 'open', Validators.required],
       startDate: [
-        this.formatDate(this.workOrder?.startDate || this.prefillStartDate),
+        this.dateToNgb(
+          this.workOrder ? new Date(this.workOrder.data.startDate) : this.prefillStartDate
+        ),
         Validators.required,
       ],
       endDate: [
-        this.formatDate(this.workOrder?.endDate || this.prefillEndDate),
+        this.dateToNgb(
+          this.workOrder ? new Date(this.workOrder.data.endDate) : this.prefillEndDate
+        ),
         Validators.required,
       ],
     });
   }
 
-  formatDate(date: Date | null | undefined): string {
-    if (!date) return '';
-    return new Date(date).toISOString().split('T')[0];
+  // Convert JS Date → NgbDateStruct { year, month, day }
+  dateToNgb(date: Date | null | undefined): NgbDateStruct | null {
+    if (!date) return null;
+    const d = new Date(date);
+    return { year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate() };
+  }
+
+  // Convert NgbDateStruct → ISO string YYYY-MM-DD
+  ngbToIso(ngb: NgbDateStruct): string {
+    return `${ngb.year}-${String(ngb.month).padStart(2, '0')}-${String(ngb.day).padStart(2, '0')}`;
   }
 
   get isEdit(): boolean {
     return !!this.workOrder;
   }
 
-  getStatusClass(status: string): string {
+  getStatusClass(status: WorkOrderStatus | null): string {
     switch (status) {
-      case 'Open':
-        return 'status-open';
-      case 'In progress':
-        return 'status-inprogress';
-      case 'Complete':
-        return 'status-complete';
-      case 'Blocked':
-        return 'status-blocked';
-      default:
-        return '';
+      case 'open':        return 'status-open';
+      case 'in-progress': return 'status-inprogress';
+      case 'complete':    return 'status-complete';
+      case 'blocked':     return 'status-blocked';
+      default:            return '';
     }
   }
 
@@ -79,15 +119,18 @@ export class WorkOrderPanelComponent implements OnInit {
 
     const val = this.form.value;
     const workOrder: WorkOrder = {
-      id: this.workOrder?.id || this.workOrderService.generateId(),
-      name: val.name,
-      workCenterId: val.workCenterId,
-      status: val.status,
-      startDate: new Date(val.startDate),
-      endDate: new Date(val.endDate),
+      docId: this.workOrder?.docId || this.workOrderService.generateId(),
+      docType: 'workOrder',
+      data: {
+        name: val.name,
+        workCenterId: val.workCenterId,
+        status: val.status,
+        startDate: this.ngbToIso(val.startDate),
+        endDate: this.ngbToIso(val.endDate),
+      },
     };
 
-    const hasOverlap = this.workOrderService.hasOverlap(workOrder, this.workOrder?.id);
+    const hasOverlap = this.workOrderService.hasOverlap(workOrder, this.workOrder?.docId);
     if (hasOverlap) {
       this.overlapError = true;
       return;

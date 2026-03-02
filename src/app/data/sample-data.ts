@@ -1,76 +1,44 @@
 import { WorkCenter, WorkOrder } from '../models';
 
 export const WORK_CENTERS: WorkCenter[] = [
-  { id: 'wc1', name: 'Genesis Hardware' },
-  { id: 'wc2', name: 'Rodriques Electrics' },
-  { id: 'wc3', name: 'Konsulting Inc' },
-  { id: 'wc4', name: 'McMarrow Distribution' },
-  { id: 'wc5', name: 'Spartan Manufacturing' }
+  { docId: 'wc1', docType: 'workCenter', data: { name: 'Genesis Hardware' } },
+  { docId: 'wc2', docType: 'workCenter', data: { name: 'Rodriques Electrics' } },
+  { docId: 'wc3', docType: 'workCenter', data: { name: 'Konsulting Inc' } },
+  { docId: 'wc4', docType: 'workCenter', data: { name: 'McMarrow Distribution' } },
+  { docId: 'wc5', docType: 'workCenter', data: { name: 'Spartan Manufacturing' } },
 ];
 
 export const WORK_ORDERS: WorkOrder[] = [
   {
-    id: 'wo1',
-    name: 'Centrix Ltd',
-    workCenterId: 'wc1',
-    status: 'Complete',
-    startDate: new Date('2024-08-01'),
-    endDate: new Date('2024-09-30')
+    docId: 'wo1', docType: 'workOrder',
+    data: { name: 'Centrix Ltd', workCenterId: 'wc1', status: 'complete', startDate: '2025-11-01', endDate: '2025-12-15' },
   },
   {
-    id: 'wo2',
-    name: 'Rodriques Electrics',
-    workCenterId: 'wc2',
-    status: 'In progress',
-    startDate: new Date('2024-09-01'),
-    endDate: new Date('2024-11-30')
+    docId: 'wo2', docType: 'workOrder',
+    data: { name: 'Genesis Hardware', workCenterId: 'wc1', status: 'in-progress', startDate: '2025-12-16', endDate: '2026-02-28' },
   },
   {
-    id: 'wo3',
-    name: 'Konsulting Inc',
-    workCenterId: 'wc3',
-    status: 'In progress',
-    startDate: new Date('2024-09-01'),
-    endDate: new Date('2024-10-31')
+    docId: 'wo3', docType: 'workOrder',
+    data: { name: 'Rodriques Electrics', workCenterId: 'wc2', status: 'in-progress', startDate: '2025-12-01', endDate: '2026-01-31' },
   },
   {
-    id: 'wo4',
-    name: 'Compleks Systems',
-    workCenterId: 'wc3',
-    status: 'In progress',
-    startDate: new Date('2024-11-01'),
-    endDate: new Date('2025-01-31')
+    docId: 'wo4', docType: 'workOrder',
+    data: { name: 'Konsulting Inc', workCenterId: 'wc3', status: 'in-progress', startDate: '2025-11-15', endDate: '2026-01-15' },
   },
   {
-    id: 'wo5',
-    name: 'McMarrow Distribution',
-    workCenterId: 'wc4',
-    status: 'Blocked',
-    startDate: new Date('2024-10-01'),
-    endDate: new Date('2025-01-15')
+    docId: 'wo5', docType: 'workOrder',
+    data: { name: 'Compleks Systems', workCenterId: 'wc3', status: 'in-progress', startDate: '2026-01-16', endDate: '2026-04-30' },
   },
   {
-    id: 'wo6',
-    name: 'Spartan Manufacturing',
-    workCenterId: 'wc5',
-    status: 'Open',
-    startDate: new Date('2024-11-01'),
-    endDate: new Date('2025-02-28')
+    docId: 'wo6', docType: 'workOrder',
+    data: { name: 'McMarrow Distribution', workCenterId: 'wc4', status: 'blocked', startDate: '2025-12-10', endDate: '2026-02-20' },
   },
   {
-    id: 'wo7',
-    name: 'Genesis Hardware',
-    workCenterId: 'wc1',
-    status: 'In progress',
-    startDate: new Date('2024-10-01'),
-    endDate: new Date('2024-12-31')
+    docId: 'wo7', docType: 'workOrder',
+    data: { name: 'Spartan Manufacturing', workCenterId: 'wc5', status: 'open', startDate: '2026-01-01', endDate: '2026-02-28' },
   },
   {
-    id: 'wo8',
-    name: 'Spartan Systems',
-    workCenterId: 'wc5',
-    status: 'In progress',
-    startDate: new Date('2025-01-01'),
-    endDate: new Date('2025-03-31')
-  }
+    docId: 'wo8', docType: 'workOrder',
+    data: { name: 'Spartan Systems', workCenterId: 'wc5', status: 'in-progress', startDate: '2026-03-01', endDate: '2026-05-31' },
+  },
 ];
