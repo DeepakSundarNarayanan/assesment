@@ -1,0 +1,27 @@
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
+@import "@ng-select/ng-select/themes/default.theme.css";
+
+* {
+  font-family: "Circular-Std", sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #fff;
+  color: #1a1a1a;
+}
+
+:root {
+  --primary: #5C53E5;
+  --status-open-bg: #EEF0FF;
+  --status-open-color: #5C53E5;
+  --status-inprogress-bg: #F3EEFF;
+  --status-inprogress-color: #7C3AED;
+  --status-complete-bg: #EEFFF4;
+  --status-complete-color: #16A34A;
+  --status-blocked-bg: #FFF8ED;
+  --status-blocked-color: #F59E0B;
+}

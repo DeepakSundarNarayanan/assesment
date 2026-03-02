@@ -1,0 +1,82 @@
+<div class="panel-overlay" (click)="onCancel()"></div>
+
+<div class="panel">
+  <!-- Header -->
+  <div class="panel-header">
+    <div class="header-left">
+      <h2 class="panel-title">Work Order Details</h2>
+      <p class="panel-subtitle">Specify the dates, name and status for this order</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn-cancel" (click)="onCancel()">Cancel</button>
+      <button type="button" class="btn-save" (click)="onSubmit()">
+        {{ isEdit ? 'Save' : 'Create' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="panel-form">
+
+    <!-- Work Order Name -->
+    <div class="form-group">
+      <label>Work Order Name</label>
+      <input
+        type="text"
+        formControlName="name"
+        placeholder="Acme Inc."
+        class="form-input"
+        [class.error]="form.get('name')?.invalid && form.get('name')?.touched"/>
+      <span class="error-msg"
+        *ngIf="form.get('name')?.invalid && form.get('name')?.touched">
+        Name is required
+      </span>
+    </div>
+
+    <!-- Status Dropdown -->
+    <div class="form-group">
+      <label>Status</label>
+      <div class="custom-select-wrapper">
+        <select formControlName="status" class="form-input status-select"
+          [ngClass]="getStatusClass(form.get('status')?.value)">
+          <option *ngFor="let s of statusOptions" [value]="s">{{ s }}</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Start Date -->
+    <div class="form-group">
+      <label>Start Date</label>
+      <input
+        type="date"
+        formControlName="startDate"
+        class="form-input"
+        [class.error]="form.get('startDate')?.invalid && form.get('startDate')?.touched"/>
+      <span class="error-msg"
+        *ngIf="form.get('startDate')?.invalid && form.get('startDate')?.touched">
+        Start date is required
+      </span>
+    </div>
+
+    <!-- End Date -->
+    <div class="form-group">
+      <label>End Date</label>
+      <input
+        type="date"
+        formControlName="endDate"
+        class="form-input"
+        [class.error]="form.get('endDate')?.invalid && form.get('endDate')?.touched"/>
+      <span class="error-msg"
+        *ngIf="form.get('endDate')?.invalid && form.get('endDate')?.touched">
+        End date is required
+      </span>
+    </div>
+
+    <!-- Overlap Error -->
+    <div class="overlap-error" *ngIf="overlapError">
+      <i class="bi bi-exclamation-triangle"></i>
+      This work order overlaps with an existing one on the same work center.
+    </div>
+
+  </form>
+</div>

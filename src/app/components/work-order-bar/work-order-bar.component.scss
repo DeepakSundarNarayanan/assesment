@@ -1,0 +1,102 @@
+.work-order-bar {
+  position: absolute;
+  height: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  cursor: pointer;
+  transition: filter 0.2s;
+  min-width: 60px;
+
+  &:hover {
+    filter: brightness(0.97);
+    .menu-btn { opacity: 1; }
+  }
+
+  &.status-open {
+    background: #EEF0FF;
+    border: 1px solid #c7c4f6;
+  }
+  &.status-inprogress {
+    background: #F3EEFF;
+    border: 1px solid #d4b8f9;
+  }
+  &.status-complete {
+    background: #EEFFF4;
+    border: 1px solid #a7f3c0;
+  }
+  &.status-blocked {
+    background: #FFF8ED;
+    border: 1px solid #fcd89a;
+  }
+}
+
+.bar-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.bar-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: #1a1a1a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.bar-status-badge {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+
+  &.status-open { background: #EEF0FF; color: #5C53E5; border: 1px solid #c7c4f6; }
+  &.status-inprogress { background: #F3EEFF; color: #7C3AED; border: 1px solid #d4b8f9; }
+  &.status-complete { background: #EEFFF4; color: #16A34A; border: 1px solid #a7f3c0; }
+  &.status-blocked { background: #FFF8ED; color: #F59E0B; border: 1px solid #fcd89a; }
+}
+
+.menu-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  opacity: 0;
+  color: #666;
+  font-size: 14px;
+  transition: opacity 0.2s;
+
+  &:hover { color: #1a1a1a; }
+}
+
+.bar-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 100;
+  min-width: 100px;
+  overflow: hidden;
+
+  .bar-menu-item {
+    padding: 8px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #1a1a1a;
+
+    &:hover { background: #f5f5f5; }
+    &.delete { color: #ef4444; }
+  }
+}

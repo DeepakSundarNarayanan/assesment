@@ -1,0 +1,242 @@
+.page-wrapper {
+  min-height: 100vh;
+  background: #fff;
+}
+
+.navbar {
+  padding: 16px 32px;
+  border-bottom: 1px solid #f0f0f0;
+
+  .brand {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #5C53E5;
+  }
+}
+
+.main-content {
+  padding: 32px;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 16px;
+}
+
+.timescale-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+
+  .timescale-label {
+    font-size: 13px;
+    color: #888;
+  }
+
+  .timescale-dropdown {
+    position: relative;
+
+    .timescale-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      background: #fff;
+      font-size: 13px;
+      font-weight: 500;
+      color: #1a1a1a;
+      cursor: pointer;
+
+      &:hover { background: #f5f5f5; }
+    }
+
+    .timescale-menu {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      z-index: 100;
+      min-width: 120px;
+      overflow: hidden;
+
+      .timescale-item {
+        padding: 8px 16px;
+        font-size: 13px;
+        cursor: pointer;
+        color: #1a1a1a;
+
+        &:hover { background: #f5f5f5; }
+        &.active { color: #5C53E5; font-weight: 600; }
+      }
+    }
+  }
+}
+
+// ...existing code...
+
+.timeline-wrapper {
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  overflow: visible;
+  display: flex;
+  margin-top: 20px;
+}
+
+.grid-header {
+  display: flex;
+  border-bottom: 1px solid #f0f0f0;
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 10;
+  overflow: visible;
+}
+
+.badge-row {
+  display: flex;
+  position: relative;
+  height: 0;
+  z-index: 9;
+
+  .col-workcenter {
+    min-width: 200px;
+    max-width: 200px;
+    flex-shrink: 0;
+  }
+
+  .col-month-badge {
+    flex: 1;
+    min-width: 150px;
+    position: relative;
+    height: 0;
+
+    .current-badge {
+      position: absolute;
+      top: -13px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #e8e4ff;
+      color: #7B72E9;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 14px;
+      border-radius: 20px;
+      white-space: nowrap;
+      z-index: 20;
+    }
+  }
+}
+// ...existing code...
+
+/* Row */
+.grid-row {
+  display: flex;
+  border-bottom: 1px solid #f0f0f0;
+  height: 64px;
+
+  &:last-child { border-bottom: none; }
+}
+
+/* Work Center column */
+.col-workcenter {
+  min-width: 200px;
+  max-width: 200px;
+  width: 200px;
+  padding: 0 16px;
+  font-size: 13px;
+  border-right: 1px solid #f0f0f0;
+  background: #fff;
+  position: sticky;
+  left: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  &.header-cell {
+    color: #aaa;
+    font-size: 12px;
+    font-weight: 500;
+    height: 48px;
+  }
+
+  &.row-cell {
+    color: #1a1a1a;
+    font-weight: 400;
+  }
+}
+
+/* Month header columns */
+.col-month {
+  min-width: 150px;
+  flex: 1;
+  padding: 0 8px;
+  font-size: 12px;
+  color: #aaa;
+  border-right: 1px solid #f0f0f0;
+  text-align: center;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+
+  &:last-child { border-right: none; }
+
+  &.current-month-col {
+    background: #f0eeff;
+    color: #5C53E5;
+    font-weight: 500;
+  }
+}
+
+/* Months wrapper in data row */
+.col-months-wrapper {
+  flex: 1;
+  position: relative;
+  height: 64px;
+
+  .bg-cells {
+    position: absolute;
+    inset: 0;
+    display: flex;
+
+    .bg-cell {
+      flex: 1;
+      min-width: 150px;
+      border-right: 1px solid #f0f0f0;
+      cursor: pointer;
+      height: 100%;
+
+      &:last-child { border-right: none; }
+
+      &.current-month-col {
+        background: #f0eeff;
+      }
+
+      &:hover {
+        background: #ebe8ff;
+      }
+    }
+  }
+
+  .bars-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+
+    app-work-order-bar {
+      pointer-events: all;
+    }
+  }
+}

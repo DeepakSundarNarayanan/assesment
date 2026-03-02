@@ -1,0 +1,105 @@
+<div class="page-wrapper">
+  <!-- Navbar -->
+  <div class="navbar">
+    <span class="brand">NAOLOGIC</span>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <h1 class="page-title">Work Orders</h1>
+
+    <!-- Timescale -->
+    <div class="timescale-row">
+      <span class="timescale-label">Timescale</span>
+      <div class="timescale-dropdown">
+        <button class="timescale-btn" (click)="toggleTimescaleDropdown()">
+          {{ timescale() }}
+          <i class="bi bi-chevron-down"></i>
+        </button>
+        <div class="timescale-menu" *ngIf="showTimescaleDropdown()">
+          <div
+            class="timescale-item"
+            *ngFor="let t of timescaleOptions"
+            [class.active]="timescale() === t"
+            (click)="selectTimescale(t)">
+            {{ t }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline Grid -->
+    <div class="timeline-wrapper">
+      <div class="timeline-scroll">
+
+        <!-- Header Row -->
+        <div class="grid-header">
+          <div class="col-workcenter header-cell">Work Center</div>
+          <div
+            class="col-month header-cell"
+            *ngFor="let col of columns"
+            [class.current-month-col]="isCurrentMonth(col.date)">
+            {{ col.label }}
+          </div>
+        </div>
+
+        <!-- Current Month Badge Row -->
+        <div class="badge-row">
+          <div class="col-workcenter"></div>
+          <div
+            class="col-month-badge"
+            *ngFor="let col of columns">
+            <span class="current-badge" *ngIf="isCurrentMonth(col.date)">Current month</span>
+          </div>
+        </div>
+
+        <!-- Data Rows -->
+        <div class="grid-row" *ngFor="let wc of workCenters">
+
+          <!-- Work Center Name -->
+          <div class="col-workcenter row-cell">{{ wc.name }}</div>
+
+          <!-- Month Cells + Bars -->
+          <div class="col-months-wrapper">
+
+            <!-- Background grid cells -->
+            <div class="bg-cells">
+              <div
+                class="bg-cell"
+                *ngFor="let col of columns"
+                [class.current-month-col]="isCurrentMonth(col.date)"
+                (click)="onCellClick(wc.id, col.date)">
+              </div>
+            </div>
+
+            <!-- Work Order Bars -->
+            <div class="bars-layer">
+              <app-work-order-bar
+                *ngFor="let wo of getWorkOrdersForCenter(wc.id)"
+                [workOrder]="wo"
+                [columns]="columns"
+                (edit)="onEditWorkOrder($event)"
+                (delete)="onDeleteWorkOrder($event)">
+              </app-work-order-bar>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Side Panel -->
+  <app-work-order-panel
+    *ngIf="isPanelOpen()"
+    [workOrder]="selectedWorkOrder()"
+    [workCenterId]="selectedWorkCenterId()"
+    [prefillStartDate]="prefillStartDate()"
+    [prefillEndDate]="prefillEndDate()"
+    (close)="onPanelClose()"
+    (save)="onPanelSave()">
+  </app-work-order-panel>
+
+</div>

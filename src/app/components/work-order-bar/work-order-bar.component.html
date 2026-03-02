@@ -1,0 +1,15 @@
+<div class="work-order-bar" [ngClass]="statusClass" [ngStyle]="barStyle">
+  <div class="bar-content">
+    <span class="bar-name">{{ workOrder.name }}</span>
+    <span class="bar-status-badge" [ngClass]="statusClass">{{ workOrder.status }}</span>
+    <button class="menu-btn" (click)="toggleMenu($event)">
+      <i class="bi bi-three-dots"></i>
+    </button>
+  </div>
+
+  <!-- Dropdown Menu -->
+  <div class="bar-menu" *ngIf="showMenu()">
+    <div class="bar-menu-item" (click)="onEdit($event)">Edit</div>
+    <div class="bar-menu-item delete" (click)="onDelete($event)">Delete</div>
+  </div>
+</div>
