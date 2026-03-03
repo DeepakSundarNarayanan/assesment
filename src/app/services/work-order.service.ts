@@ -1,6 +1,43 @@
 import { Injectable, signal } from '@angular/core';
 import { WorkOrder, WorkCenter } from '../models/index';
 
+const STORAGE_KEY = 'work-orders';
+
+const SEED_WORK_ORDERS: WorkOrder[] = [
+  {
+    docId: 'wo1', docType: 'workOrder',
+    data: { name: 'Centrix Ltd', workCenterId: 'wc1', status: 'complete', startDate: '2025-11-01', endDate: '2025-12-15' },
+  },
+  {
+    docId: 'wo2', docType: 'workOrder',
+    data: { name: 'Genesis Hardware', workCenterId: 'wc1', status: 'in-progress', startDate: '2025-12-16', endDate: '2026-02-28' },
+  },
+  {
+    docId: 'wo3', docType: 'workOrder',
+    data: { name: 'Rodriques Electrics', workCenterId: 'wc2', status: 'in-progress', startDate: '2025-12-01', endDate: '2026-01-31' },
+  },
+  {
+    docId: 'wo4', docType: 'workOrder',
+    data: { name: 'Konsulting Inc', workCenterId: 'wc3', status: 'in-progress', startDate: '2025-11-15', endDate: '2026-01-15' },
+  },
+  {
+    docId: 'wo5', docType: 'workOrder',
+    data: { name: 'Compleks Systems', workCenterId: 'wc3', status: 'in-progress', startDate: '2026-01-16', endDate: '2026-04-30' },
+  },
+  {
+    docId: 'wo6', docType: 'workOrder',
+    data: { name: 'McMarrow Distribution', workCenterId: 'wc4', status: 'blocked', startDate: '2025-12-10', endDate: '2026-02-20' },
+  },
+  {
+    docId: 'wo7', docType: 'workOrder',
+    data: { name: 'Spartan Manufacturing', workCenterId: 'wc5', status: 'open', startDate: '2026-01-01', endDate: '2026-02-28' },
+  },
+  {
+    docId: 'wo8', docType: 'workOrder',
+    data: { name: 'Spartan Systems', workCenterId: 'wc5', status: 'in-progress', startDate: '2026-03-01', endDate: '2026-05-31' },
+  },
+];
+
 @Injectable({ providedIn: 'root' })
 export class WorkOrderService {
   private workCenters = signal<WorkCenter[]>([
@@ -11,40 +48,25 @@ export class WorkOrderService {
     { docId: 'wc5', docType: 'workCenter', data: { name: 'Spartan Manufacturing' } },
   ]);
 
-  private workOrders = signal<WorkOrder[]>([
-    {
-      docId: 'wo1', docType: 'workOrder',
-      data: { name: 'Centrix Ltd', workCenterId: 'wc1', status: 'complete', startDate: '2025-11-01', endDate: '2025-12-15' },
-    },
-    {
-      docId: 'wo2', docType: 'workOrder',
-      data: { name: 'Genesis Hardware', workCenterId: 'wc1', status: 'in-progress', startDate: '2025-12-16', endDate: '2026-02-28' },
-    },
-    {
-      docId: 'wo3', docType: 'workOrder',
-      data: { name: 'Rodriques Electrics', workCenterId: 'wc2', status: 'in-progress', startDate: '2025-12-01', endDate: '2026-01-31' },
-    },
-    {
-      docId: 'wo4', docType: 'workOrder',
-      data: { name: 'Konsulting Inc', workCenterId: 'wc3', status: 'in-progress', startDate: '2025-11-15', endDate: '2026-01-15' },
-    },
-    {
-      docId: 'wo5', docType: 'workOrder',
-      data: { name: 'Compleks Systems', workCenterId: 'wc3', status: 'in-progress', startDate: '2026-01-16', endDate: '2026-04-30' },
-    },
-    {
-      docId: 'wo6', docType: 'workOrder',
-      data: { name: 'McMarrow Distribution', workCenterId: 'wc4', status: 'blocked', startDate: '2025-12-10', endDate: '2026-02-20' },
-    },
-    {
-      docId: 'wo7', docType: 'workOrder',
-      data: { name: 'Spartan Manufacturing', workCenterId: 'wc5', status: 'open', startDate: '2026-01-01', endDate: '2026-02-28' },
-    },
-    {
-      docId: 'wo8', docType: 'workOrder',
-      data: { name: 'Spartan Systems', workCenterId: 'wc5', status: 'in-progress', startDate: '2026-03-01', endDate: '2026-05-31' },
-    },
-  ]);
+  private workOrders = signal<WorkOrder[]>(this.loadFromStorage());
+
+  // ── Persistence ──────────────────────────────────────────────────────────────
+
+  private loadFromStorage(): WorkOrder[] {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw) as WorkOrder[];
+    } catch {
+      // corrupted data — fall through to seed
+    }
+    return SEED_WORK_ORDERS;
+  }
+
+  private saveToStorage(orders: WorkOrder[]): void {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
+  }
+
+  // ── Public API ───────────────────────────────────────────────────────────────
 
   getWorkCenters(): WorkCenter[] {
     return this.workCenters();
@@ -59,17 +81,27 @@ export class WorkOrderService {
   }
 
   addWorkOrder(workOrder: WorkOrder): void {
-    this.workOrders.update((orders) => [...orders, workOrder]);
+    this.workOrders.update((orders) => {
+      const next = [...orders, workOrder];
+      this.saveToStorage(next);
+      return next;
+    });
   }
 
   updateWorkOrder(workOrder: WorkOrder): void {
-    this.workOrders.update((orders) =>
-      orders.map((wo) => (wo.docId === workOrder.docId ? workOrder : wo)),
-    );
+    this.workOrders.update((orders) => {
+      const next = orders.map((wo) => (wo.docId === workOrder.docId ? workOrder : wo));
+      this.saveToStorage(next);
+      return next;
+    });
   }
 
   deleteWorkOrder(docId: string): void {
-    this.workOrders.update((orders) => orders.filter((wo) => wo.docId !== docId));
+    this.workOrders.update((orders) => {
+      const next = orders.filter((wo) => wo.docId !== docId);
+      this.saveToStorage(next);
+      return next;
+    });
   }
 
   hasOverlap(workOrder: WorkOrder, excludeId?: string): boolean {

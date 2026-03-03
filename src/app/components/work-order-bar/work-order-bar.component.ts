@@ -1,4 +1,12 @@
-import { Component, Input, Output, EventEmitter, signal, HostListener, ElementRef } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  signal,
+  HostListener,
+  ElementRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WorkOrder, Timescale } from '../../models/index';
 
@@ -7,7 +15,7 @@ import { WorkOrder, Timescale } from '../../models/index';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './work-order-bar.component.html',
-  styleUrls: ['./work-order-bar.component.scss']
+  styleUrls: ['./work-order-bar.component.scss'],
 })
 export class WorkOrderBarComponent {
   @Input() workOrder!: WorkOrder;
@@ -46,39 +54,55 @@ export class WorkOrderBarComponent {
 
     const totalDuration = totalEnd - totalStart;
     const startTime = Math.max(new Date(this.workOrder.data.startDate).getTime(), totalStart);
-    const endTime   = Math.min(new Date(this.workOrder.data.endDate).getTime(),   totalEnd);
+    const endTime = Math.min(new Date(this.workOrder.data.endDate).getTime(), totalEnd);
 
     if (endTime <= startTime) return { display: 'none' };
 
-    const leftPercent  = ((startTime - totalStart) / totalDuration) * 100;
-    const widthPercent = ((endTime   - startTime)  / totalDuration) * 100;
+    const leftPercent = ((startTime - totalStart) / totalDuration) * 100;
+    const widthPercent = ((endTime - startTime) / totalDuration) * 100;
 
     return { left: `${leftPercent}%`, width: `${widthPercent}%` };
   }
 
   get statusClass(): string {
     switch (this.workOrder.data.status) {
-      case 'open':        return 'status-open';
-      case 'in-progress': return 'status-inprogress';
-      case 'complete':    return 'status-complete';
-      case 'blocked':     return 'status-blocked';
-      default:            return '';
+      case 'open':
+        return 'status-open';
+      case 'in-progress':
+        return 'status-inprogress';
+      case 'complete':
+        return 'status-complete';
+      case 'blocked':
+        return 'status-blocked';
+      default:
+        return '';
     }
+  }
+
+  get formattedDateRange(): string {
+    const fmt = (d: string) =>
+      new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    return `${fmt(this.workOrder.data.startDate)} – ${fmt(this.workOrder.data.endDate)}`;
   }
 
   get statusLabel(): string {
     switch (this.workOrder.data.status) {
-      case 'open':        return 'Open';
-      case 'in-progress': return 'In progress';
-      case 'complete':    return 'Complete';
-      case 'blocked':     return 'Blocked';
-      default:            return '';
+      case 'open':
+        return 'Open';
+      case 'in-progress':
+        return 'In progress';
+      case 'complete':
+        return 'Complete';
+      case 'blocked':
+        return 'Blocked';
+      default:
+        return '';
     }
   }
 
   toggleMenu(event: MouseEvent) {
     event.stopPropagation();
-    this.showMenu.update(v => !v);
+    this.showMenu.update((v) => !v);
   }
 
   onEdit(event: MouseEvent) {

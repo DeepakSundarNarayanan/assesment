@@ -1,11 +1,20 @@
 <div class="work-order-bar" [ngClass]="statusClass" [ngStyle]="barStyle">
+
+  <!-- Tooltip -->
+  <div class="bar-tooltip">
+    <div class="tooltip-name">{{ workOrder.data.name }}</div>
+    <div class="tooltip-status">{{ statusLabel }}</div>
+    <div class="tooltip-dates">{{ formattedDateRange }}</div>
+  </div>
+
   <div class="bar-content">
     <span class="bar-name">{{ workOrder.data.name }}</span>
     <span class="bar-status-badge" [ngClass]="statusClass">{{ statusLabel }}</span>
-    <button class="menu-btn" (click)="toggleMenu($event)">
-      <i class="bi bi-three-dots"></i>
-    </button>
   </div>
+
+  <button class="menu-btn" (click)="toggleMenu($event)">
+    <i class="bi bi-three-dots"></i>
+  </button>
 
   <!-- Dropdown Menu -->
   <div class="bar-menu" *ngIf="showMenu()">

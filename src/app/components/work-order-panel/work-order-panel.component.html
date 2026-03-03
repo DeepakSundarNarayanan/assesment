@@ -1,6 +1,6 @@
-<div class="panel-overlay" (click)="onCancel()"></div>
+<div class="panel-overlay" [class.is-closing]="isClosing()" (click)="onCancel()"></div>
 
-<div class="panel">
+<div class="panel" [class.is-closing]="isClosing()">
   <!-- Header -->
   <div class="panel-header">
     <div class="header-left">
@@ -47,20 +47,27 @@
       </ng-select>
     </div>
 
-    <!-- End Date (ngb-datepicker) — design shows End Date above Start Date -->
+    <!-- End Date -->
     <div class="form-group">
       <label>End Date</label>
       <div class="date-input-group"
         [class.error]="form.get('endDate')?.invalid && form.get('endDate')?.touched">
         <input
           class="form-input date-input"
-          formControlName="endDate"
-          ngbDatepicker
-          #endPicker="ngbDatepicker"
+          [value]="formatNgbDate(form.get('endDate')?.value)"
+          readonly
           placeholder="DD.MM.YYYY"/>
-        <button class="calendar-toggle-btn" (click)="endPicker.toggle()" type="button">
+        <button class="calendar-toggle-btn" (click)="toggleEndPicker()" type="button">
           <i class="bi bi-calendar3"></i>
         </button>
+      </div>
+      <div class="inline-picker" *ngIf="showEndPicker()">
+        <ngb-datepicker
+          [ngModel]="form.get('endDate')?.value"
+          [ngModelOptions]="{standalone: true}"
+          (dateSelect)="onDateSelect('endDate', $event)"
+          navigation="arrows">
+        </ngb-datepicker>
       </div>
       <span class="error-msg"
         *ngIf="form.get('endDate')?.invalid && form.get('endDate')?.touched">
@@ -68,25 +75,38 @@
       </span>
     </div>
 
-    <!-- Start Date (ngb-datepicker) -->
+    <!-- Start Date -->
     <div class="form-group">
       <label>Start Date</label>
       <div class="date-input-group"
         [class.error]="form.get('startDate')?.invalid && form.get('startDate')?.touched">
         <input
           class="form-input date-input"
-          formControlName="startDate"
-          ngbDatepicker
-          #startPicker="ngbDatepicker"
+          [value]="formatNgbDate(form.get('startDate')?.value)"
+          readonly
           placeholder="DD.MM.YYYY"/>
-        <button class="calendar-toggle-btn" (click)="startPicker.toggle()" type="button">
+        <button class="calendar-toggle-btn" (click)="toggleStartPicker()" type="button">
           <i class="bi bi-calendar3"></i>
         </button>
+      </div>
+      <div class="inline-picker" *ngIf="showStartPicker()">
+        <ngb-datepicker
+          [ngModel]="form.get('startDate')?.value"
+          [ngModelOptions]="{standalone: true}"
+          (dateSelect)="onDateSelect('startDate', $event)"
+          navigation="arrows">
+        </ngb-datepicker>
       </div>
       <span class="error-msg"
         *ngIf="form.get('startDate')?.invalid && form.get('startDate')?.touched">
         Start date is required
       </span>
+    </div>
+
+    <!-- Date order error -->
+    <div class="overlap-error" *ngIf="dateOrderError">
+      <i class="bi bi-exclamation-triangle"></i>
+      End date must be after start date.
     </div>
 
     <!-- Overlap Error -->

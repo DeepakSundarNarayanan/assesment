@@ -1,41 +1,24 @@
-import { Component, Input, Output, EventEmitter, OnInit, Injectable } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
-import {
-  NgbDatepickerModule,
-  NgbDateStruct,
-  NgbDateParserFormatter,
-} from '@ng-bootstrap/ng-bootstrap';
+import { NgbDatepickerModule, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 import { WorkOrder, WorkOrderStatus, WorkCenter } from '../../models/index';
 import { WorkOrderService } from '../../services/work-order.service';
 
-// Custom formatter: displays dates as DD.MM.YYYY
-@Injectable()
-export class DotDateFormatter extends NgbDateParserFormatter {
-  parse(value: string): NgbDateStruct | null {
-    if (!value) return null;
-    const parts = value.trim().split('.');
-    if (parts.length !== 3) return null;
-    return { day: +parts[0], month: +parts[1], year: +parts[2] };
-  }
-  format(date: NgbDateStruct | null): string {
-    if (!date) return '';
-    return (
-      String(date.day).padStart(2, '0') +
-      '.' +
-      String(date.month).padStart(2, '0') +
-      '.' +
-      date.year
-    );
-  }
+function endAfterStart(group: AbstractControl): ValidationErrors | null {
+  const start: NgbDateStruct | null = group.get('startDate')?.value;
+  const end: NgbDateStruct | null = group.get('endDate')?.value;
+  if (!start || !end) return null;
+  const s = start.year * 10000 + start.month * 100 + start.day;
+  const e = end.year * 10000 + end.month * 100 + end.day;
+  return e >= s ? null : { endBeforeStart: true };
 }
 
 @Component({
   selector: 'app-work-order-panel',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgSelectModule, NgbDatepickerModule],
-  providers: [{ provide: NgbDateParserFormatter, useClass: DotDateFormatter }],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, NgSelectModule, NgbDatepickerModule],
   templateUrl: './work-order-panel.component.html',
   styleUrls: ['./work-order-panel.component.scss'],
 })
@@ -50,8 +33,10 @@ export class WorkOrderPanelComponent implements OnInit {
   form!: FormGroup;
   workCenters: WorkCenter[] = [];
   overlapError = false;
+  isClosing = signal(false);
+  showStartPicker = signal(false);
+  showEndPicker = signal(false);
 
-  // Objects so ng-select can show "In progress" while storing 'in-progress'
   statusOptions: { value: WorkOrderStatus; label: string }[] = [
     { value: 'open',        label: 'Open' },
     { value: 'in-progress', label: 'In progress' },
@@ -82,33 +67,60 @@ export class WorkOrderPanelComponent implements OnInit {
         ),
         Validators.required,
       ],
-    });
+    }, { validators: endAfterStart });
   }
 
-  // Convert JS Date → NgbDateStruct { year, month, day }
+  get dateOrderError(): boolean {
+    return !!this.form.errors?.['endBeforeStart'] &&
+      (!!this.form.get('startDate')?.touched || !!this.form.get('endDate')?.touched);
+  }
+
   dateToNgb(date: Date | null | undefined): NgbDateStruct | null {
     if (!date) return null;
     const d = new Date(date);
     return { year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate() };
   }
 
-  // Convert NgbDateStruct → ISO string YYYY-MM-DD
   ngbToIso(ngb: NgbDateStruct): string {
     return `${ngb.year}-${String(ngb.month).padStart(2, '0')}-${String(ngb.day).padStart(2, '0')}`;
+  }
+
+  formatNgbDate(date: NgbDateStruct | null): string {
+    if (!date) return '';
+    return (
+      String(date.day).padStart(2, '0') +
+      '.' +
+      String(date.month).padStart(2, '0') +
+      '.' +
+      date.year
+    );
+  }
+
+  toggleStartPicker() {
+    this.showStartPicker.update(v => !v);
+    if (this.showStartPicker()) this.showEndPicker.set(false);
+  }
+
+  toggleEndPicker() {
+    this.showEndPicker.update(v => !v);
+    if (this.showEndPicker()) this.showStartPicker.set(false);
+  }
+
+  onDateSelect(field: 'startDate' | 'endDate', date: NgbDateStruct) {
+    this.form.get(field)?.setValue(date);
+    this.form.get(field)?.markAsTouched();
+    if (field === 'startDate') this.showStartPicker.set(false);
+    if (field === 'endDate') this.showEndPicker.set(false);
   }
 
   get isEdit(): boolean {
     return !!this.workOrder;
   }
 
-  getStatusClass(status: WorkOrderStatus | null): string {
-    switch (status) {
-      case 'open':        return 'status-open';
-      case 'in-progress': return 'status-inprogress';
-      case 'complete':    return 'status-complete';
-      case 'blocked':     return 'status-blocked';
-      default:            return '';
-    }
+  private closeWithAnimation(emitFn: () => void) {
+    if (this.isClosing()) return;
+    this.isClosing.set(true);
+    setTimeout(() => emitFn(), 250);
   }
 
   onSubmit() {
@@ -144,10 +156,10 @@ export class WorkOrderPanelComponent implements OnInit {
       this.workOrderService.addWorkOrder(workOrder);
     }
 
-    this.save.emit();
+    this.closeWithAnimation(() => this.save.emit());
   }
 
   onCancel() {
-    this.close.emit();
+    this.closeWithAnimation(() => this.close.emit());
   }
 }

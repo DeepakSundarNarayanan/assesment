@@ -3,6 +3,11 @@
   inset: 0;
   background: rgba(0,0,0,0.15);
   z-index: 200;
+  animation: fadeIn 0.25s ease;
+
+  &.is-closing {
+    animation: fadeOut 0.25s ease forwards;
+  }
 }
 
 .panel {
@@ -17,11 +22,30 @@
   display: flex;
   flex-direction: column;
   animation: slideIn 0.25s ease;
+
+  &.is-closing {
+    animation: slideOut 0.25s ease forwards;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
 }
 
 @keyframes slideIn {
   from { transform: translateX(100%); }
-  to { transform: translateX(0); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes slideOut {
+  from { transform: translateX(0); }
+  to   { transform: translateX(100%); }
 }
 
 .panel-header {
@@ -164,6 +188,15 @@
     flex-shrink: 0;
 
     &:hover { color: #5C53E5; background: #f5f5f5; }
+  }
+}
+
+// Inline datepicker (shown/hidden via toggle)
+.inline-picker {
+  ngb-datepicker {
+    width: 100%;
+    border-color: #e0e0e0;
+    border-radius: 8px;
   }
 }
 

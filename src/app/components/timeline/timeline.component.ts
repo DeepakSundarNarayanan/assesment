@@ -43,24 +43,21 @@ export class TimelineComponent implements OnInit {
     this.workOrders = this.workOrderService.getWorkOrders();
   }
 
-  // Returns the Monday of the week containing the given date
   getMondayOfWeek(date: Date): Date {
     const d = new Date(date);
-    const day = d.getDay(); // 0=Sun, 1=Mon ... 6=Sat
+    const day = d.getDay();
     const diff = day === 0 ? -6 : 1 - day;
     d.setDate(d.getDate() + diff);
     d.setHours(0, 0, 0, 0);
     return d;
   }
 
-  // Rebuild columns whenever the timescale changes
   generateColumns() {
     this.columns = [];
     const now = new Date();
     const ts = this.timescale();
 
     if (ts === 'Month') {
-      // 12 months centred on today (4 before, 7 after)
       const start = new Date(now.getFullYear(), now.getMonth() - 4, 1);
       for (let i = 0; i < 12; i++) {
         const date = new Date(start.getFullYear(), start.getMonth() + i, 1);
@@ -70,7 +67,6 @@ export class TimelineComponent implements OnInit {
         });
       }
     } else if (ts === 'Week') {
-      // 26 weeks centred on current week (13 before, 12 after)
       const monday = this.getMondayOfWeek(now);
       const start = new Date(monday.getTime() - 13 * 7 * 24 * 60 * 60 * 1000);
       for (let i = 0; i < 26; i++) {
@@ -81,7 +77,6 @@ export class TimelineComponent implements OnInit {
         });
       }
     } else {
-      // Day: 60 days centred on today (30 before, 29 after)
       const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30);
       for (let i = 0; i < 60; i++) {
         const date = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
@@ -93,7 +88,6 @@ export class TimelineComponent implements OnInit {
     }
   }
 
-  // Highlights the column that contains today
   isCurrentColumn(date: Date): boolean {
     const now = new Date();
     const ts = this.timescale();
@@ -111,7 +105,6 @@ export class TimelineComponent implements OnInit {
     }
   }
 
-  // Label shown in the current-column badge
   get currentColumnLabel(): string {
     switch (this.timescale()) {
       case 'Month': return 'Current month';
@@ -121,7 +114,6 @@ export class TimelineComponent implements OnInit {
     }
   }
 
-  // Left position (%) of today's vertical indicator line
   get todayLineLeft(): string {
     if (!this.columns.length) return '-1px';
 
@@ -145,7 +137,6 @@ export class TimelineComponent implements OnInit {
     return `${leftPercent}%`;
   }
 
-  // Minimum column width depending on zoom level
   get colMinWidth(): string {
     switch (this.timescale()) {
       case 'Day':  return '50px';
@@ -161,7 +152,7 @@ export class TimelineComponent implements OnInit {
   selectTimescale(t: Timescale) {
     this.timescale.set(t);
     this.showTimescaleDropdown.set(false);
-    this.generateColumns(); // Rebuild columns for new zoom level
+    this.generateColumns();
   }
 
   toggleTimescaleDropdown() {
@@ -178,7 +169,6 @@ export class TimelineComponent implements OnInit {
   onCellClick(workCenterId: string, colDate: Date) {
     if (this.isPanelOpen()) return;
 
-    // Pre-fill start = clicked date, end = start + 7 days (per spec)
     const startDate = new Date(colDate);
     const endDate = new Date(colDate);
     endDate.setDate(endDate.getDate() + 7);

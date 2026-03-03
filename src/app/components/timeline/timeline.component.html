@@ -10,19 +10,21 @@
 
     <!-- Timescale -->
     <div class="timescale-row">
-      <span class="timescale-label">Timescale</span>
-      <div class="timescale-dropdown">
-        <button class="timescale-btn" (click)="toggleTimescaleDropdown()">
-          {{ timescale() }}
-          <i class="bi bi-chevron-down"></i>
-        </button>
-        <div class="timescale-menu" *ngIf="showTimescaleDropdown()">
-          <div
-            class="timescale-item"
-            *ngFor="let t of timescaleOptions"
-            [class.active]="timescale() === t"
-            (click)="selectTimescale(t)">
-            {{ t }}
+      <div class="timescale-pill">
+        <span class="timescale-label">Timescale</span>
+        <div class="timescale-dropdown">
+          <button class="timescale-btn" (click)="toggleTimescaleDropdown()">
+            {{ timescale() }}
+            <i class="bi bi-chevron-down"></i>
+          </button>
+          <div class="timescale-menu" *ngIf="showTimescaleDropdown()">
+            <div
+              class="timescale-item"
+              *ngFor="let t of timescaleOptions"
+              [class.active]="timescale() === t"
+              (click)="selectTimescale(t)">
+              {{ t }}
+            </div>
           </div>
         </div>
       </div>
@@ -40,10 +42,10 @@
             *ngFor="let col of columns"
             [style.min-width]="colMinWidth"
             [class.current-month-col]="isCurrentColumn(col.date)">
-            {{ col.label }}
             <span class="current-badge" *ngIf="isCurrentColumn(col.date)">
               {{ currentColumnLabel }}
             </span>
+            {{ col.label }}
           </div>
         </div>
 
