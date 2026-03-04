@@ -241,6 +241,19 @@
   &.ng-select .ng-option.ng-option-marked {
     background: #f9f9f9;
   }
+
+  // Replace default arrow with Triangle.svg
+  &.ng-select .ng-arrow-wrapper {
+    padding-right: 12px;
+
+    .ng-arrow {
+      border: none;
+      width: 10px;
+      height: 10px;
+      background: url('/Triangle.svg') no-repeat center center;
+      background-size: contain;
+    }
+  }
 }
 
 // Colored status pills inside the select (label + options)

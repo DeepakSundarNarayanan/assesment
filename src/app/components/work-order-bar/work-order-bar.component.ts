@@ -6,6 +6,7 @@ import {
   signal,
   HostListener,
   ElementRef,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WorkOrder, Timescale } from '../../models/index';
@@ -16,6 +17,7 @@ import { WorkOrder, Timescale } from '../../models/index';
   imports: [CommonModule],
   templateUrl: './work-order-bar.component.html',
   styleUrls: ['./work-order-bar.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WorkOrderBarComponent {
   @Input() workOrder!: WorkOrder;

@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, HostListener, ElementRef } from '@angular/core';
+import { Component, signal, OnInit, HostListener, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WorkOrderService } from '../../services/work-order.service';
 import { WorkCenter, WorkOrder, Timescale } from '../../models';
@@ -11,6 +11,7 @@ import { WorkOrderPanelComponent } from '../work-order-panel/work-order-panel.co
   imports: [CommonModule, WorkOrderBarComponent, WorkOrderPanelComponent],
   templateUrl: './timeline.component.html',
   styleUrls: ['./timeline.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimelineComponent implements OnInit {
   workCenters: WorkCenter[] = [];
@@ -203,4 +204,9 @@ export class TimelineComponent implements OnInit {
     this.selectedWorkOrder.set(null);
     this.loadData();
   }
+
+  trackByColumn(_: number, col: { label: string; date: Date }) { return col.date.getTime(); }
+  trackByWorkCenter(_: number, wc: WorkCenter) { return wc.docId; }
+  trackByWorkOrder(_: number, wo: WorkOrder) { return wo.docId; }
+  trackByTimescale(_: number, t: Timescale) { return t; }
 }

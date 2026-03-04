@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, signal, ViewChild, HostListener, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -21,6 +21,7 @@ function endAfterStart(group: AbstractControl): ValidationErrors | null {
   imports: [CommonModule, FormsModule, ReactiveFormsModule, NgSelectModule, NgbDatepickerModule],
   templateUrl: './work-order-panel.component.html',
   styleUrls: ['./work-order-panel.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WorkOrderPanelComponent implements OnInit {
   @Input() workOrder: WorkOrder | null = null;
@@ -200,5 +201,10 @@ export class WorkOrderPanelComponent implements OnInit {
 
   onCancel() {
     this.closeWithAnimation(() => this.close.emit());
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey() {
+    this.onCancel();
   }
 }
