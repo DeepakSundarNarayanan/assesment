@@ -1,7 +1,7 @@
 <div class="page-wrapper">
   <!-- Navbar -->
   <div class="app-navbar">
-    <span class="brand">NAOLOGIC</span>
+    <img src="/Group 3.png" alt="Naologic" class="brand-logo" />
   </div>
 
   <!-- Main Content -->
@@ -42,10 +42,10 @@
             *ngFor="let col of columns"
             [style.min-width]="colMinWidth"
             [class.current-month-col]="isCurrentColumn(col.date)">
+            <span class="col-label">{{ col.label }}</span>
             <span class="current-badge" *ngIf="isCurrentColumn(col.date)">
               {{ currentColumnLabel }}
             </span>
-            {{ col.label }}
           </div>
         </div>
 

@@ -44,6 +44,9 @@
         [clearable]="false"
         [searchable]="false"
         class="status-select">
+        <ng-template ng-label-tmp let-item="item">
+          <span class="status-pill status-{{item.value}}">{{ item.label }}</span>
+        </ng-template>
       </ng-select>
     </div>
 

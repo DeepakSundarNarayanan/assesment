@@ -239,7 +239,20 @@
 
   &.ng-select .ng-option.ng-option-selected,
   &.ng-select .ng-option.ng-option-marked {
-    background: #f0eeff;
-    color: #5C53E5;
+    background: #f9f9f9;
   }
+}
+
+// Colored status pills inside the select (label + options)
+.status-pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+
+  &.status-open        { background: #EEF0FF; color: #5C53E5; }
+  &.status-in-progress { background: #F3EEFF; color: #7C3AED; }
+  &.status-complete    { background: #EEFFF4; color: #16A34A; }
+  &.status-blocked     { background: #FFF8ED; color: #F59E0B; }
 }

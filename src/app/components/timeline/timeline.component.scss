@@ -7,11 +7,10 @@
   padding: 16px 32px;
   border-bottom: 1px solid #f0f0f0;
 
-  .brand {
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    color: #5C53E5;
+  .brand-logo {
+    height: 18px;
+    width: auto;
+    display: block;
   }
 }
 
@@ -167,18 +166,21 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 6px;
   height: 64px;
 
   &:last-child { border-right: none; }
 
   &.current-month-col {
     background: #f0eeff;
-    color: #5C53E5;
+  }
+
+  .col-label {
+    font-size: 12px;
+    color: #aaa;
     font-weight: 500;
   }
 
-  // Badge sits above the month label in the flex column
   .current-badge {
     background: #e8e4ff;
     color: #7B72E9;
@@ -206,12 +208,26 @@
       border-right: 1px solid #f0f0f0;
       cursor: pointer;
       height: 100%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
       &:last-child { border-right: none; }
 
       &.current-month-col { background: #f0eeff; }
 
-      &:hover { background: #ebe8ff; }
+      &:hover {
+        background: #ebe8ff;
+
+        &::after {
+          content: 'Click to add dates';
+          font-size: 12px;
+          color: #9390e8;
+          white-space: nowrap;
+          pointer-events: none;
+        }
+      }
     }
   }
 
