@@ -62,11 +62,22 @@
         </button>
       </div>
       <div class="inline-picker" *ngIf="showEndPicker()">
-        <ngb-datepicker
+        <div class="picker-nav">
+          <button type="button" class="btn btn-link ngb-dp-arrow-btn"
+                  (click)="prevMonth('end')" title="Previous month" aria-label="Previous month">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <button type="button" class="btn btn-link ngb-dp-arrow-btn ngb-dp-arrow-next"
+                  (click)="nextMonth('end')" title="Next month" aria-label="Next month">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+        <ngb-datepicker #endPicker
           [ngModel]="form.get('endDate')?.value"
           [ngModelOptions]="{standalone: true}"
-          (dateSelect)="onDateSelect('endDate', $event)"
-          navigation="arrows">
+          [navigation]="'none'"
+          [startDate]="endStartDate()!"
+          (dateSelect)="onDateSelect('endDate', $event)">
         </ngb-datepicker>
       </div>
       <span class="error-msg"
@@ -90,11 +101,22 @@
         </button>
       </div>
       <div class="inline-picker" *ngIf="showStartPicker()">
-        <ngb-datepicker
+        <div class="picker-nav">
+          <button type="button" class="btn btn-link ngb-dp-arrow-btn"
+                  (click)="prevMonth('start')" title="Previous month" aria-label="Previous month">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <button type="button" class="btn btn-link ngb-dp-arrow-btn ngb-dp-arrow-next"
+                  (click)="nextMonth('start')" title="Next month" aria-label="Next month">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+        <ngb-datepicker #startPicker
           [ngModel]="form.get('startDate')?.value"
           [ngModelOptions]="{standalone: true}"
-          (dateSelect)="onDateSelect('startDate', $event)"
-          navigation="arrows">
+          [navigation]="'none'"
+          [startDate]="startStartDate()!"
+          (dateSelect)="onDateSelect('startDate', $event)">
         </ngb-datepicker>
       </div>
       <span class="error-msg"

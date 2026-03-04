@@ -193,10 +193,25 @@
 
 // Inline datepicker (shown/hidden via toggle)
 .inline-picker {
+  .picker-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    background-color: var(--bs-tertiary-bg, #f8f9fa);
+    border: 1px solid #e0e0e0;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+
+    button {
+      color: #444;
+    }
+  }
+
   ngb-datepicker {
     width: 100%;
     border-color: #e0e0e0;
-    border-radius: 8px;
+    border-radius: 0 0 8px 8px;
   }
 }
 

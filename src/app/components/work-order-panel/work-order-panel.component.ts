@@ -1,8 +1,8 @@
-import { Component, Input, Output, EventEmitter, OnInit, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { NgbDatepickerModule, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDatepickerModule, NgbDateStruct, NgbDatepicker } from '@ng-bootstrap/ng-bootstrap';
 import { WorkOrder, WorkOrderStatus, WorkCenter } from '../../models/index';
 import { WorkOrderService } from '../../services/work-order.service';
 
@@ -30,12 +30,17 @@ export class WorkOrderPanelComponent implements OnInit {
   @Output() close = new EventEmitter<void>();
   @Output() save = new EventEmitter<void>();
 
+  @ViewChild('endPicker') private endPicker?: NgbDatepicker;
+  @ViewChild('startPicker') private startPicker?: NgbDatepicker;
+
   form!: FormGroup;
   workCenters: WorkCenter[] = [];
   overlapError = false;
   isClosing = signal(false);
   showStartPicker = signal(false);
   showEndPicker = signal(false);
+  endStartDate = signal<NgbDateStruct | undefined>(undefined);
+  startStartDate = signal<NgbDateStruct | undefined>(undefined);
 
   statusOptions: { value: WorkOrderStatus; label: string }[] = [
     { value: 'open',        label: 'Open' },
@@ -98,12 +103,46 @@ export class WorkOrderPanelComponent implements OnInit {
 
   toggleStartPicker() {
     this.showStartPicker.update(v => !v);
-    if (this.showStartPicker()) this.showEndPicker.set(false);
+    if (this.showStartPicker()) {
+      this.showEndPicker.set(false);
+      const val = this.form.get('startDate')?.value as NgbDateStruct | null;
+      this.startStartDate.set(val ?? this.dateToNgb(new Date()) ?? undefined);
+    }
   }
 
   toggleEndPicker() {
     this.showEndPicker.update(v => !v);
-    if (this.showEndPicker()) this.showStartPicker.set(false);
+    if (this.showEndPicker()) {
+      this.showStartPicker.set(false);
+      const val = this.form.get('endDate')?.value as NgbDateStruct | null;
+      this.endStartDate.set(val ?? this.dateToNgb(new Date()) ?? undefined);
+    }
+  }
+
+  prevMonth(picker: 'end' | 'start') {
+    const [dateSig, ref] = picker === 'end'
+      ? [this.endStartDate, this.endPicker]
+      : [this.startStartDate, this.startPicker];
+    const current = dateSig();
+    if (!current) return;
+    const newMonth: NgbDateStruct = current.month === 1
+      ? { year: current.year - 1, month: 12, day: 1 }
+      : { year: current.year, month: current.month - 1, day: 1 };
+    dateSig.set(newMonth);
+    ref?.navigateTo(newMonth);
+  }
+
+  nextMonth(picker: 'end' | 'start') {
+    const [dateSig, ref] = picker === 'end'
+      ? [this.endStartDate, this.endPicker]
+      : [this.startStartDate, this.startPicker];
+    const current = dateSig();
+    if (!current) return;
+    const newMonth: NgbDateStruct = current.month === 12
+      ? { year: current.year + 1, month: 1, day: 1 }
+      : { year: current.year, month: current.month + 1, day: 1 };
+    dateSig.set(newMonth);
+    ref?.navigateTo(newMonth);
   }
 
   onDateSelect(field: 'startDate' | 'endDate', date: NgbDateStruct) {
