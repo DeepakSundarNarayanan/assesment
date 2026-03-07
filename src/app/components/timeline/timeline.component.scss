@@ -43,6 +43,7 @@
     border-radius: 8px;
     overflow: visible;
     background: #fff;
+    position: relative;
   }
 
   .timescale-label {
@@ -57,8 +58,6 @@
   }
 
   .timescale-dropdown {
-    position: relative;
-
     .timescale-btn {
       display: flex;
       align-items: center;
@@ -91,8 +90,8 @@
       padding: 8px 0;
 
       .timescale-item {
-        padding: 14px 24px;
-        font-size: 16px;
+        padding: 8px 16px;
+        font-size: 13px;
         font-weight: 400;
         cursor: pointer;
         color: #1a1a1a;
