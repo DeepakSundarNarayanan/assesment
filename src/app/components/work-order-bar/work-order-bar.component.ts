@@ -50,6 +50,8 @@ export class WorkOrderBarComponent {
       totalEnd = new Date(lastCol.getFullYear(), lastCol.getMonth() + 1, 1).getTime();
     } else if (this.timescale === 'Week') {
       totalEnd = lastCol.getTime() + 7 * 24 * 60 * 60 * 1000;
+    } else if (this.timescale === 'Hour') {
+      totalEnd = lastCol.getTime() + 60 * 60 * 1000;
     } else {
       totalEnd = lastCol.getTime() + 24 * 60 * 60 * 1000;
     }

@@ -50,40 +50,42 @@
         </div>
 
         <!-- Data Rows -->
-        <div class="grid-row" *ngFor="let wc of workCenters; trackBy: trackByWorkCenter">
+        <div class="data-rows">
+          <!-- Single today indicator line spanning all rows -->
+          <div class="today-line" [style.left]="todayLineLeftAbsolute"></div>
 
-          <!-- Work Center Name -->
-          <div class="col-workcenter row-cell">{{ wc.data.name }}</div>
+          <div class="grid-row" *ngFor="let wc of workCenters; trackBy: trackByWorkCenter">
 
-          <!-- Month Cells + Bars -->
-          <div class="col-months-wrapper">
+            <!-- Work Center Name -->
+            <div class="col-workcenter row-cell">{{ wc.data.name }}</div>
 
-            <!-- Background grid cells -->
-            <div class="bg-cells">
-              <div
-                class="bg-cell"
-                *ngFor="let col of columns; trackBy: trackByColumn"
-                [style.min-width]="colMinWidth"
-                [class.current-month-col]="isCurrentColumn(col.date)"
-                (click)="onCellClick(wc.docId, col.date)">
+            <!-- Month Cells + Bars -->
+            <div class="col-months-wrapper" [style.min-width]="totalColumnsMinWidth">
+
+              <!-- Background grid cells -->
+              <div class="bg-cells">
+                <div
+                  class="bg-cell"
+                  *ngFor="let col of columns; trackBy: trackByColumn"
+                  [style.min-width]="colMinWidth"
+                  [class.current-month-col]="isCurrentColumn(col.date)"
+                  (click)="onCellClick(wc.docId, col.date)">
+                </div>
               </div>
+
+              <!-- Work Order Bars -->
+              <div class="bars-layer">
+                <app-work-order-bar
+                  *ngFor="let wo of getWorkOrdersForCenter(wc.docId); trackBy: trackByWorkOrder"
+                  [workOrder]="wo"
+                  [columns]="columns"
+                  [timescale]="timescale()"
+                  (edit)="onEditWorkOrder($event)"
+                  (delete)="onDeleteWorkOrder($event)">
+                </app-work-order-bar>
+              </div>
+
             </div>
-
-            <!-- Today indicator line -->
-            <div class="today-line" [style.left]="todayLineLeft"></div>
-
-            <!-- Work Order Bars -->
-            <div class="bars-layer">
-              <app-work-order-bar
-                *ngFor="let wo of getWorkOrdersForCenter(wc.docId); trackBy: trackByWorkOrder"
-                [workOrder]="wo"
-                [columns]="columns"
-                [timescale]="timescale()"
-                (edit)="onEditWorkOrder($event)"
-                (delete)="onDeleteWorkOrder($event)">
-              </app-work-order-bar>
-            </div>
-
           </div>
         </div>
 

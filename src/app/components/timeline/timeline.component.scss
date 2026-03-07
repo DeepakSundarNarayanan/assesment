@@ -76,16 +76,18 @@
       top: calc(100% + 6px);
       left: 0;
       background: #fff;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border: 1px solid #e8e8e8;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
       z-index: 100;
-      min-width: 120px;
+      min-width: 200px;
       overflow: hidden;
+      padding: 8px 0;
 
       .timescale-item {
-        padding: 8px 16px;
-        font-size: 13px;
+        padding: 14px 24px;
+        font-size: 16px;
+        font-weight: 400;
         cursor: pointer;
         color: #1a1a1a;
 
@@ -103,6 +105,18 @@
   overflow: visible;
   display: flex;
   margin-top: 20px;
+}
+
+.timeline-scroll {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: visible;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .grid-header {
@@ -156,8 +170,7 @@
 /* Month header columns */
 .col-month {
   min-width: 150px;
-  flex: 1;
-  padding: 0 8px;
+  padding: 10px 8px;
   font-size: 12px;
   color: #aaa;
   border-right: 1px solid #f0f0f0;
@@ -165,8 +178,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
+  justify-content: space-between;
   height: 64px;
 
   &:last-child { border-right: none; }
@@ -222,10 +234,19 @@
 
         &::after {
           content: 'Click to add dates';
-          font-size: 12px;
-          color: #9390e8;
+          position: absolute;
+          bottom: calc(100% + 6px);
+          left: 50%;
+          transform: translateX(-50%);
+          background: #3a3850;
+          color: #fff;
+          font-size: 13px;
+          font-weight: 500;
           white-space: nowrap;
+          padding: 6px 14px;
+          border-radius: 8px;
           pointer-events: none;
+          z-index: 50;
         }
       }
     }
@@ -240,15 +261,19 @@
       pointer-events: all;
     }
   }
+}
 
-  // Today vertical indicator line
+/* Wrapper for all data rows — today line lives here so it starts below the header */
+.data-rows {
+  position: relative;
+
   .today-line {
     position: absolute;
     top: 0;
     bottom: 0;
     width: 2px;
     background: #5C53E5;
-    z-index: 4;
+    z-index: 2;
     pointer-events: none;
     transform: translateX(-50%);
   }

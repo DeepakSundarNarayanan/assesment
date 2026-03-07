@@ -18,7 +18,7 @@ export class TimelineComponent implements OnInit {
   workOrders: WorkOrder[] = [];
 
   timescale = signal<Timescale>('Month');
-  timescaleOptions: Timescale[] = ['Day', 'Week', 'Month'];
+  timescaleOptions: Timescale[] = ['Hour', 'Day', 'Week', 'Month'];
   showTimescaleDropdown = signal(false);
 
   columns: { label: string; date: Date }[] = [];
@@ -59,8 +59,9 @@ export class TimelineComponent implements OnInit {
     const ts = this.timescale();
 
     if (ts === 'Month') {
-      const start = new Date(now.getFullYear(), now.getMonth() - 4, 1);
-      for (let i = 0; i < 12; i++) {
+      // ±6 months = 13 columns total
+      const start = new Date(now.getFullYear(), now.getMonth() - 6, 1);
+      for (let i = 0; i < 13; i++) {
         const date = new Date(start.getFullYear(), start.getMonth() + i, 1);
         this.columns.push({
           label: date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
@@ -68,21 +69,35 @@ export class TimelineComponent implements OnInit {
         });
       }
     } else if (ts === 'Week') {
+      // ±2 months ≈ ±8 weeks = 17 columns total
       const monday = this.getMondayOfWeek(now);
-      const start = new Date(monday.getTime() - 13 * 7 * 24 * 60 * 60 * 1000);
-      for (let i = 0; i < 26; i++) {
+      const start = new Date(monday.getTime() - 8 * 7 * 24 * 60 * 60 * 1000);
+      for (let i = 0; i < 17; i++) {
         const date = new Date(start.getTime() + i * 7 * 24 * 60 * 60 * 1000);
         this.columns.push({
           label: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
           date,
         });
       }
-    } else {
-      const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30);
-      for (let i = 0; i < 60; i++) {
+    } else if (ts === 'Day') {
+      // ±2 weeks = 29 columns total
+      const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 14);
+      for (let i = 0; i < 29; i++) {
         const date = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
         this.columns.push({
           label: date.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' }),
+          date,
+        });
+      }
+    } else {
+      // Hour: show 48 hours centred on now (24h back, 24h forward)
+      const startHour = new Date(now);
+      startHour.setMinutes(0, 0, 0);
+      startHour.setHours(startHour.getHours() - 24);
+      for (let i = 0; i < 48; i++) {
+        const date = new Date(startHour.getTime() + i * 60 * 60 * 1000);
+        this.columns.push({
+          label: date.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true }),
           date,
         });
       }
@@ -97,8 +112,16 @@ export class TimelineComponent implements OnInit {
       return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
     } else if (ts === 'Week') {
       return this.getMondayOfWeek(now).getTime() === this.getMondayOfWeek(date).getTime();
-    } else {
+    } else if (ts === 'Day') {
       return (
+        date.getDate() === now.getDate() &&
+        date.getMonth() === now.getMonth() &&
+        date.getFullYear() === now.getFullYear()
+      );
+    } else {
+      // Hour: highlight the current hour column
+      return (
+        date.getHours() === now.getHours() &&
         date.getDate() === now.getDate() &&
         date.getMonth() === now.getMonth() &&
         date.getFullYear() === now.getFullYear()
@@ -111,6 +134,7 @@ export class TimelineComponent implements OnInit {
       case 'Month': return 'Current month';
       case 'Week':  return 'Current week';
       case 'Day':   return 'Today';
+      case 'Hour':  return 'Now';
       default:      return '';
     }
   }
@@ -127,6 +151,8 @@ export class TimelineComponent implements OnInit {
       totalEnd = new Date(lastCol.getFullYear(), lastCol.getMonth() + 1, 1).getTime();
     } else if (this.timescale() === 'Week') {
       totalEnd = lastCol.getTime() + 7 * 24 * 60 * 60 * 1000;
+    } else if (this.timescale() === 'Hour') {
+      totalEnd = lastCol.getTime() + 60 * 60 * 1000;
     } else {
       totalEnd = lastCol.getTime() + 24 * 60 * 60 * 1000;
     }
@@ -138,12 +164,28 @@ export class TimelineComponent implements OnInit {
     return `${leftPercent}%`;
   }
 
+  // Left position of the today line relative to the full row width (including 280px work-center column)
+  get todayLineLeftAbsolute(): string {
+    const left = this.todayLineLeft;
+    if (left === '-1px') return '-1px';
+    const pct = parseFloat(left);
+    const fraction = pct / 100;
+    // calc(280px * (1 - fraction) + pct%) positions correctly within the full row
+    return `calc(${(280 * (1 - fraction)).toFixed(2)}px + ${left})`;
+  }
+
   get colMinWidth(): string {
     switch (this.timescale()) {
+      case 'Hour': return '60px';
       case 'Day':  return '50px';
       case 'Week': return '80px';
       default:     return '150px';
     }
+  }
+
+  get totalColumnsMinWidth(): string {
+    const colW = parseInt(this.colMinWidth, 10);
+    return `${this.columns.length * colW}px`;
   }
 
   getWorkOrdersForCenter(workCenterId: string): WorkOrder[] {

@@ -1,5 +1,5 @@
 export type WorkOrderStatus = 'open' | 'in-progress' | 'complete' | 'blocked';
-export type Timescale = 'Day' | 'Week' | 'Month';
+export type Timescale = 'Hour' | 'Day' | 'Week' | 'Month';
 
 export interface WorkCenter {
   docId: string;

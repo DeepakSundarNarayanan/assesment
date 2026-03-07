@@ -212,6 +212,23 @@
     width: 100%;
     border-color: #e0e0e0;
     border-radius: 0 0 8px 8px;
+
+    ::ng-deep .ngb-dp-months {
+      width: 100%;
+    }
+
+    ::ng-deep .ngb-dp-month {
+      width: 100%;
+    }
+
+    ::ng-deep ngb-datepicker-month {
+      width: 100%;
+    }
+
+    ::ng-deep .ngb-dp-week {
+      width: 100%;
+      justify-content: space-around;
+    }
   }
 }
 
