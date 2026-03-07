@@ -46,15 +46,17 @@ export class TimelineComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    setTimeout(() => {
-      const el = this.timelineScrollEl.nativeElement;
-      const colWidth = parseInt(this.colMinWidth, 10);
-      const currentIdx = this.columns.findIndex(col => this.isCurrentColumn(col.date));
-      if (currentIdx >= 0) {
-        const center = currentIdx * colWidth - (el.clientWidth - 300) / 2 + colWidth / 2;
-        el.scrollLeft = Math.max(0, center);
-      }
-    }, 0);
+    setTimeout(() => this.scrollToToday(), 0);
+  }
+
+  scrollToToday() {
+    const el = this.timelineScrollEl.nativeElement;
+    const colWidth = parseInt(this.colMinWidth, 10);
+    const currentIdx = this.columns.findIndex(col => this.isCurrentColumn(col.date));
+    if (currentIdx >= 0) {
+      const center = currentIdx * colWidth - (el.clientWidth - 300) / 2 + colWidth / 2;
+      el.scrollLeft = Math.max(0, center);
+    }
   }
 
   loadData() {
@@ -214,16 +216,7 @@ export class TimelineComponent implements OnInit, AfterViewInit {
     this.timescale.set(t);
     this.showTimescaleDropdown.set(false);
     this.generateColumns();
-    // Re-center on the current column after timescale change
-    setTimeout(() => {
-      const el = this.timelineScrollEl.nativeElement;
-      const colWidth = parseInt(this.colMinWidth, 10);
-      const currentIdx = this.columns.findIndex(col => this.isCurrentColumn(col.date));
-      if (currentIdx >= 0) {
-        const center = currentIdx * colWidth - (el.clientWidth - 300) / 2 + colWidth / 2;
-        el.scrollLeft = Math.max(0, center);
-      }
-    }, 0);
+    setTimeout(() => this.scrollToToday(), 0);
   }
 
   onTimelineScroll(event: Event) {

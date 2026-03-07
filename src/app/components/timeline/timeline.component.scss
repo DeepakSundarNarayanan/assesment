@@ -28,13 +28,29 @@
   font-size: 24px;
   font-weight: 600;
   color: #1a1a1a;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
+}
+
+.today-btn {
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #5C53E5;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-left: 10px;
+  white-space: nowrap;
+
+  &:hover { background: #f5f3ff; border-color: #c7c4f6; }
+  &:active { background: #ede8ff; }
 }
 
 .timescale-row {
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 
   .timescale-pill {
     display: flex;
@@ -181,6 +197,7 @@
 
 /* Month header columns */
 .col-month {
+  flex: 1;
   min-width: 120px;
   padding: 10px 8px;
   font-size: 12px;
