@@ -22,6 +22,11 @@ ng serve
 
 Open your browser at `http://localhost:4200/`
 
+### Run unit tests
+```bash
+ng test
+```
+
 ### Run E2E tests (Playwright)
 ```bash
 npm run test:e2e
@@ -111,6 +116,31 @@ npm run test:e2e:ui
 
 #### trackBy Functions
 - All `*ngFor` loops in the timeline use `trackBy` functions to prevent unnecessary DOM re-renders when data changes
+
+#### Unit Test Suite (Vitest via `ng test`)
+52 unit tests covering core logic and component behavior:
+
+**`WorkOrderService`** (16 tests)
+- Service creation, work center list, seed data fallback
+- `addWorkOrder` — count, persistence, localStorage write
+- `updateWorkOrder` — name change, count unchanged
+- `deleteWorkOrder` — removal, count decrease
+- `hasOverlap` — overlapping, contained, adjacent, different center, self-exclude on update
+- `generateId` format
+
+**`TimelineComponent`** (34 tests)
+- `colMinWidth` — correct pixel value for all 4 timescales
+- `generateColumns` — correct column count and start conditions per timescale
+- `totalColumnsMinWidth` — arithmetic for all timescales
+- `isCurrentColumn` — true/false cases for all 4 modes
+- `todayLineLeftAbsolute` — range validation and out-of-range `-1px` sentinel
+- `getMondayOfWeek` — Wednesday, Sunday, and Monday inputs
+- `currentColumnLabel` — all 4 label strings
+- `getWorkOrdersForCenter` — filtering and empty-list case
+
+**`App`** (2 tests)
+- Component creation
+- Renders `h1` with "Work Orders"
 
 #### E2E Test Suite (Playwright)
 Three automated end-to-end tests covering the critical user flows:

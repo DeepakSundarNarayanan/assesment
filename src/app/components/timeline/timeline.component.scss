@@ -1,6 +1,6 @@
 .page-wrapper {
   height: 100vh;
-  background: #fff;
+  background: #f7f7f8;
   display: flex;
   flex-direction: column;
 }
@@ -142,7 +142,7 @@
 .grid-row {
   display: flex;
   border-bottom: 1px solid #f0f0f0;
-  height: 64px;
+  height: 48px;
 
   &:last-child,
   &:has(+ .grid-filler) { border-bottom: none; }
@@ -150,9 +150,9 @@
 
 /* Work Center column */
 .col-workcenter {
-  min-width: 280px;
-  max-width: 280px;
-  width: 280px;
+  min-width: 300px;
+  max-width: 300px;
+  width: 300px;
   padding: 0 20px;
   font-size: 13px;
   border-right: 1px solid #f0f0f0;
@@ -168,7 +168,7 @@
     color: #aaa;
     font-size: 12px;
     font-weight: 500;
-    height: 64px;
+    height: 48px;
   }
 
   &.row-cell {
@@ -179,7 +179,7 @@
 
 /* Month header columns */
 .col-month {
-  min-width: 150px;
+  min-width: 120px;
   padding: 10px 8px;
   font-size: 12px;
   color: #aaa;
@@ -189,7 +189,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  height: 64px;
+  height: 48px;
 
   &:last-child { border-right: none; }
 
@@ -297,9 +297,9 @@
   flex: 1;
 
   .col-workcenter {
-    min-width: 280px;
-    max-width: 280px;
-    width: 280px;
+    min-width: 300px;
+    max-width: 300px;
+    width: 300px;
     background: #fff;
     position: sticky;
     left: 0;

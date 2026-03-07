@@ -94,9 +94,9 @@ export class WorkOrderPanelComponent implements OnInit {
   formatNgbDate(date: NgbDateStruct | null): string {
     if (!date) return '';
     return (
-      String(date.day).padStart(2, '0') +
-      '.' +
       String(date.month).padStart(2, '0') +
+      '.' +
+      String(date.day).padStart(2, '0') +
       '.' +
       date.year
     );

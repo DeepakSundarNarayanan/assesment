@@ -1,13 +1,8 @@
 .panel-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.15);
+  background: transparent;
   z-index: 200;
-  animation: fadeIn 0.25s ease;
-
-  &.is-closing {
-    animation: fadeOut 0.25s ease forwards;
-  }
 }
 
 .panel {
@@ -19,7 +14,8 @@
   height: 100vh;
   background: #fff;
   z-index: 201;
-  box-shadow: -4px 0 24px rgba(0,0,0,0.1);
+  border-left: 1px solid #e8e8e8;
+  box-shadow: -8px 0 32px rgba(0,0,0,0.06);
   display: flex;
   flex-direction: column;
   animation: slideIn 0.25s ease;
@@ -255,9 +251,20 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   }
 
-  &.ng-select .ng-option.ng-option-selected,
+  &.ng-select .ng-option {
+    font-size: 14px;
+    color: #1a1a1a;
+  }
+
+  &.ng-select .ng-option.ng-option-selected {
+    color: #5C53E5;
+    font-weight: 500;
+    background: transparent;
+  }
+
   &.ng-select .ng-option.ng-option-marked {
-    background: #f9f9f9;
+    background: #f5f5f5;
+    color: #1a1a1a;
   }
 
   // Replace default arrow with Triangle.svg

@@ -170,7 +170,7 @@ export class TimelineComponent implements OnInit {
     if (left === '-1px') return '-1px';
     const pct = parseFloat(left);
     const colsWidth = parseInt(this.colMinWidth, 10) * this.columns.length;
-    const px = 280 + (pct / 100) * colsWidth;
+    const px = 300 + (pct / 100) * colsWidth;
     return `${px.toFixed(2)}px`;
   }
 
@@ -179,7 +179,7 @@ export class TimelineComponent implements OnInit {
       case 'Hour': return '60px';
       case 'Day':  return '50px';
       case 'Week': return '80px';
-      default:     return '150px';
+      default:     return '120px';
     }
   }
 

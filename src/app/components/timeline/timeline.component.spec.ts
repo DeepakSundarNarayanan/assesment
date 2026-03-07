@@ -52,9 +52,9 @@ describe('TimelineComponent', () => {
       expect(component.colMinWidth).toBe('80px');
     });
 
-    it('returns 150px for Month', () => {
+    it('returns 120px for Month', () => {
       component.timescale.set('Month');
-      expect(component.colMinWidth).toBe('150px');
+      expect(component.colMinWidth).toBe('120px');
     });
   });
 
@@ -106,10 +106,10 @@ describe('TimelineComponent', () => {
   // ── totalColumnsMinWidth ───────────────────────────────────────────────────
 
   describe('totalColumnsMinWidth', () => {
-    it('returns 1950px for Month (13 × 150)', () => {
+    it('returns 1560px for Month (13 × 120)', () => {
       component.timescale.set('Month');
       component.generateColumns();
-      expect(component.totalColumnsMinWidth).toBe('1950px');
+      expect(component.totalColumnsMinWidth).toBe('1560px');
     });
 
     it('returns 1360px for Week (17 × 80)', () => {
@@ -185,18 +185,18 @@ describe('TimelineComponent', () => {
       expect(component.todayLineLeftAbsolute).not.toBe('-1px');
     });
 
-    it('is greater than 280px (past the work-center column) for Month', () => {
+    it('is greater than 300px (past the work-center column) for Month', () => {
       component.timescale.set('Month');
       component.generateColumns();
       const px = parseFloat(component.todayLineLeftAbsolute);
-      expect(px).toBeGreaterThan(280);
+      expect(px).toBeGreaterThan(300);
     });
 
     it('is within the total grid width for Month', () => {
       component.timescale.set('Month');
       component.generateColumns();
       const px = parseFloat(component.todayLineLeftAbsolute);
-      const maxPx = 280 + 13 * 150; // 2230
+      const maxPx = 300 + 13 * 120; // 1860
       expect(px).toBeLessThan(maxPx);
     });
 
