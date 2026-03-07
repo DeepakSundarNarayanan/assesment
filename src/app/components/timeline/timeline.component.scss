@@ -1,6 +1,8 @@
 .page-wrapper {
-  min-height: 100vh;
+  height: 100vh;
   background: #fff;
+  display: flex;
+  flex-direction: column;
 }
 
 .app-navbar {
@@ -16,6 +18,10 @@
 
 .main-content {
   padding: 32px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .page-title {
@@ -105,6 +111,8 @@
   overflow: visible;
   display: flex;
   margin-top: 20px;
+  flex: 1;
+  min-height: 0;
 }
 
 .timeline-scroll {
@@ -113,6 +121,8 @@
   overflow-y: visible;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  display: flex;
+  flex-direction: column;
 
   &::-webkit-scrollbar {
     display: none;
@@ -135,7 +145,8 @@
   border-bottom: 1px solid #f0f0f0;
   height: 64px;
 
-  &:last-child { border-bottom: none; }
+  &:last-child,
+  &:has(+ .grid-filler) { border-bottom: none; }
 }
 
 /* Work Center column */
@@ -208,7 +219,6 @@
 .col-months-wrapper {
   flex: 1;
   position: relative;
-  height: 64px;
 
   .bg-cells {
     position: absolute;
@@ -266,6 +276,9 @@
 /* Wrapper for all data rows — today line lives here so it starts below the header */
 .data-rows {
   position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 
   .today-line {
     position: absolute;
@@ -276,5 +289,28 @@
     z-index: 2;
     pointer-events: none;
     transform: translateX(-50%);
+  }
+}
+
+/* Filler row — extends column lines to the bottom of the page */
+.grid-filler {
+  display: flex;
+  flex: 1;
+
+  .col-workcenter {
+    min-width: 280px;
+    max-width: 280px;
+    width: 280px;
+    background: #fff;
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    border-right: 1px solid #f0f0f0;
+    flex-shrink: 0;
+  }
+
+  .col-months-wrapper {
+    flex: 1;
+    position: relative;
   }
 }

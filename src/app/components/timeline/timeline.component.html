@@ -87,6 +87,20 @@
 
             </div>
           </div>
+          <!-- Filler: extends column lines to the bottom of the page -->
+          <div class="grid-filler">
+            <div class="col-workcenter"></div>
+            <div class="col-months-wrapper" [style.min-width]="totalColumnsMinWidth">
+              <div class="bg-cells">
+                <div
+                  class="bg-cell"
+                  *ngFor="let col of columns; trackBy: trackByColumn"
+                  [style.min-width]="colMinWidth"
+                  [class.current-month-col]="isCurrentColumn(col.date)">
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
       </div>

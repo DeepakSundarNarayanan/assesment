@@ -164,14 +164,14 @@ export class TimelineComponent implements OnInit {
     return `${leftPercent}%`;
   }
 
-  // Left position of the today line relative to the full row width (including 280px work-center column)
+  // Left position of the today line in pixels (work-center column + offset into month columns)
   get todayLineLeftAbsolute(): string {
     const left = this.todayLineLeft;
     if (left === '-1px') return '-1px';
     const pct = parseFloat(left);
-    const fraction = pct / 100;
-    // calc(280px * (1 - fraction) + pct%) positions correctly within the full row
-    return `calc(${(280 * (1 - fraction)).toFixed(2)}px + ${left})`;
+    const colsWidth = parseInt(this.colMinWidth, 10) * this.columns.length;
+    const px = 280 + (pct / 100) * colsWidth;
+    return `${px.toFixed(2)}px`;
   }
 
   get colMinWidth(): string {
