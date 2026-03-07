@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, HostListener, ElementRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, signal, OnInit, AfterViewInit, HostListener, ElementRef, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WorkOrderService } from '../../services/work-order.service';
 import { WorkCenter, WorkOrder, Timescale } from '../../models';
@@ -13,7 +13,9 @@ import { WorkOrderPanelComponent } from '../work-order-panel/work-order-panel.co
   styleUrls: ['./timeline.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TimelineComponent implements OnInit {
+export class TimelineComponent implements OnInit, AfterViewInit {
+  @ViewChild('timelineScroll') timelineScrollEl!: ElementRef<HTMLDivElement>;
+
   workCenters: WorkCenter[] = [];
   workOrders: WorkOrder[] = [];
 
@@ -29,14 +31,30 @@ export class TimelineComponent implements OnInit {
   prefillStartDate = signal<Date | null>(null);
   prefillEndDate = signal<Date | null>(null);
 
+  private isAdjustingScroll = false;
+  private readonly BUFFER_COLS = 4;
+
   constructor(
     private workOrderService: WorkOrderService,
     private elRef: ElementRef,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
     this.loadData();
     this.generateColumns();
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      const el = this.timelineScrollEl.nativeElement;
+      const colWidth = parseInt(this.colMinWidth, 10);
+      const currentIdx = this.columns.findIndex(col => this.isCurrentColumn(col.date));
+      if (currentIdx >= 0) {
+        const center = currentIdx * colWidth - (el.clientWidth - 300) / 2 + colWidth / 2;
+        el.scrollLeft = Math.max(0, center);
+      }
+    }, 0);
   }
 
   loadData() {
@@ -196,6 +214,95 @@ export class TimelineComponent implements OnInit {
     this.timescale.set(t);
     this.showTimescaleDropdown.set(false);
     this.generateColumns();
+    // Re-center on the current column after timescale change
+    setTimeout(() => {
+      const el = this.timelineScrollEl.nativeElement;
+      const colWidth = parseInt(this.colMinWidth, 10);
+      const currentIdx = this.columns.findIndex(col => this.isCurrentColumn(col.date));
+      if (currentIdx >= 0) {
+        const center = currentIdx * colWidth - (el.clientWidth - 300) / 2 + colWidth / 2;
+        el.scrollLeft = Math.max(0, center);
+      }
+    }, 0);
+  }
+
+  onTimelineScroll(event: Event) {
+    if (this.isAdjustingScroll) return;
+    const el = event.target as HTMLDivElement;
+    const colWidth = parseInt(this.colMinWidth, 10);
+    const threshold = colWidth * this.BUFFER_COLS;
+
+    if (el.scrollLeft < threshold) {
+      this.prependColumns(el);
+    }
+
+    if (el.scrollWidth - el.clientWidth - el.scrollLeft < threshold) {
+      this.appendColumns();
+    }
+  }
+
+  private prependColumns(el: HTMLDivElement) {
+    const newCols = this.buildColumnsBefore(this.BUFFER_COLS);
+    this.columns = [...newCols, ...this.columns];
+    this.cdr.detectChanges();
+    this.isAdjustingScroll = true;
+    el.scrollLeft += newCols.length * parseInt(this.colMinWidth, 10);
+    requestAnimationFrame(() => { this.isAdjustingScroll = false; });
+  }
+
+  private appendColumns() {
+    const newCols = this.buildColumnsAfter(this.BUFFER_COLS);
+    this.columns = [...this.columns, ...newCols];
+    this.cdr.detectChanges();
+  }
+
+  private buildColumnsBefore(count: number): { label: string; date: Date }[] {
+    const ts = this.timescale();
+    const first = this.columns[0].date;
+    const result: { label: string; date: Date }[] = [];
+    for (let i = count; i >= 1; i--) {
+      let date: Date;
+      if (ts === 'Month') {
+        date = new Date(first.getFullYear(), first.getMonth() - i, 1);
+      } else if (ts === 'Week') {
+        date = new Date(first.getTime() - i * 7 * 24 * 60 * 60 * 1000);
+      } else if (ts === 'Day') {
+        date = new Date(first.getFullYear(), first.getMonth(), first.getDate() - i);
+      } else {
+        date = new Date(first.getTime() - i * 60 * 60 * 1000);
+      }
+      result.push({ label: this.formatColumnLabel(date), date });
+    }
+    return result;
+  }
+
+  private buildColumnsAfter(count: number): { label: string; date: Date }[] {
+    const ts = this.timescale();
+    const last = this.columns[this.columns.length - 1].date;
+    const result: { label: string; date: Date }[] = [];
+    for (let i = 1; i <= count; i++) {
+      let date: Date;
+      if (ts === 'Month') {
+        date = new Date(last.getFullYear(), last.getMonth() + i, 1);
+      } else if (ts === 'Week') {
+        date = new Date(last.getTime() + i * 7 * 24 * 60 * 60 * 1000);
+      } else if (ts === 'Day') {
+        date = new Date(last.getFullYear(), last.getMonth(), last.getDate() + i);
+      } else {
+        date = new Date(last.getTime() + i * 60 * 60 * 1000);
+      }
+      result.push({ label: this.formatColumnLabel(date), date });
+    }
+    return result;
+  }
+
+  private formatColumnLabel(date: Date): string {
+    switch (this.timescale()) {
+      case 'Month': return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+      case 'Week':  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      case 'Day':   return date.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' });
+      default:      return date.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true });
+    }
   }
 
   toggleTimescaleDropdown() {

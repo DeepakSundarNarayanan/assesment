@@ -32,7 +32,7 @@
 
     <!-- Timeline Grid -->
     <div class="timeline-wrapper">
-      <div class="timeline-scroll">
+      <div class="timeline-scroll" #timelineScroll (scroll)="onTimelineScroll($event)">
 
         <!-- Header Row — badge lives inside the header cell to avoid z-index overlap -->
         <div class="grid-header">

@@ -45,13 +45,16 @@ npm run test:e2e:ui
 
 #### Timeline Grid
 - Horizontally scrollable timeline grid with a fixed left panel showing work center names
-- Three zoom levels switchable via a **Timescale** dropdown:
-  - **Day** — shows individual days (~60 day range)
-  - **Week** — shows week starting dates (~26 week range)
-  - **Month** — shows months (~12 month range)
-- Current period highlighted with a light purple column background and a **"Current month / week / Today"** badge in the header
-- **Today indicator** — a vertical purple line showing the exact current date position within the grid
+- Four zoom levels switchable via a **Timescale** dropdown:
+  - **Hour** — shows individual hours (48-hour range centred on now)
+  - **Day** — shows individual days (~29 day range centred on today)
+  - **Week** — shows week starting dates (~17 week range centred on current week)
+  - **Month** — shows months (~13 month range centred on current month)
+- Current period highlighted with a light purple column background and a **"Current month / week / Today / Now"** badge in the header
+- **Today indicator** — a vertical purple line showing the exact current date/time position within the grid
 - Row hover state with highlighted background
+- **Auto-scroll to current period** — on initial load and after switching timescale, the grid automatically scrolls to center the current column in the viewport
+- **Infinite scroll** — scrolling to either edge automatically prepends or appends date columns, allowing navigation to any past or future date without limits; scroll position is preserved when prepending so the view never jumps
 
 #### Work Order Bars
 - Each work order renders as a horizontal bar positioned precisely by start/end date
@@ -107,6 +110,7 @@ npm run test:e2e:ui
 
 #### "Click to Add Dates" Hover Hint
 - Empty timeline cells show a **"Click to add dates"** label on hover, guiding users to create work orders
+- Tooltip is automatically suppressed when a work order's action menu (Edit / Delete) is open to prevent visual overlap
 
 #### Custom Cursor
 - Timeline cells use a custom pointer SVG cursor on hover
