@@ -215,3 +215,19 @@ width = (barEnd   - barStart)   / totalDuration * 100%
 This means bars automatically reposition and resize when the zoom level changes without any additional layout calculations.
 
 State is managed entirely through Angular signals — no RxJS, no NgRx. The `WorkOrderService` holds the source of truth as in-memory arrays, and components pull fresh data after every create/update/delete.
+
+---
+
+## Future Improvements (`@upgrade`)
+
+| Tag | File | Description |
+|-----|------|-------------|
+| `@upgrade` | `timeline.component.ts` · `scrollToToday()` | Work center column width is hardcoded as `300` in the scroll-to-today and today-line calculations. Extract it as a shared constant or a responsive getter so it stays correct when the column is resized (e.g. on mobile). |
+| `@upgrade` | `timeline.component.ts` · `todayLineLeftAbsolute` | Same hardcoded `300` issue — the today line pixel offset will be wrong on mobile where the column is 120px. |
+| `@upgrade` | `timeline.component.ts` · `onDeleteWorkOrder()` | Delete is instant with no confirmation dialog. Add a confirmation prompt to prevent accidental data loss. |
+| `@upgrade` | `timeline.component.ts` · `loadData()` | Work centers and work orders are plain arrays assigned directly on the component. Converting them to signals would let `OnPush` react to updates automatically without needing `cdr.detectChanges()`. |
+| `@upgrade` | `work-order-bar.component.ts` · `barStyle` | Bar position recalculates on every change detection cycle. Memoize the result or use a computed signal to avoid redundant calculations when many bars are rendered. |
+| `@upgrade` | `work-order-panel.component.ts` · `closeWithAnimation()` | The 250ms close delay is hardcoded. Tie it to the actual CSS animation duration via a shared constant so they can't drift out of sync. |
+| `@upgrade` | `work-order.service.ts` · `generateId()` | Uses `Math.random()` which can theoretically produce collisions. Replace with `crypto.randomUUID()` for guaranteed uniqueness. |
+| `@upgrade` | `work-order.service.ts` | All data is stored in `localStorage` — it is lost if the user clears browser storage and is not shared across devices. Replace with a real backend API (REST or Firestore). |
+| `@upgrade` | `styles.scss` | The `:has(.bar-menu)` tooltip suppression rule is in global styles as a workaround for Angular's CSS encapsulation. A cleaner long-term fix is an `@Output` from the bar component that lets the timeline add a host class, keeping the logic inside the component boundary. |
