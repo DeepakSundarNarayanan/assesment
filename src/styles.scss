@@ -1,5 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
 
+/*
+ * Suppress the "Click to add dates" bg-cell tooltip when a work-order action menu
+ * is open. Must live here (global) because .bar-menu belongs to WorkOrderBarComponent
+ * which has its own Angular _ngcontent attribute — the :has() selector inside a
+ * component's scoped SCSS would never match across component boundaries.
+ */
+.col-months-wrapper:has(.bar-menu) .bg-cell:hover::after {
+  display: none !important;
+}
+
 * {
   font-family: "Circular-Std", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   box-sizing: border-box;

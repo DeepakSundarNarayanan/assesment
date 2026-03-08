@@ -36,6 +36,22 @@ const SEED_WORK_ORDERS: WorkOrder[] = [
     docId: 'wo8', docType: 'workOrder',
     data: { name: 'Spartan Systems', workCenterId: 'wc5', status: 'in-progress', startDate: '2026-03-01', endDate: '2026-05-31' },
   },
+  {
+    docId: 'wo9', docType: 'workOrder',
+    data: { name: 'Apex Inbound Shipment', workCenterId: 'wc6', status: 'open', startDate: '2026-01-10', endDate: '2026-02-20' },
+  },
+  {
+    docId: 'wo10', docType: 'workOrder',
+    data: { name: 'Apex Outbound Run', workCenterId: 'wc6', status: 'in-progress', startDate: '2026-03-01', endDate: '2026-04-15' },
+  },
+  {
+    docId: 'wo11', docType: 'workOrder',
+    data: { name: 'Vertex Assembly Line A', workCenterId: 'wc7', status: 'blocked', startDate: '2025-12-01', endDate: '2026-01-31' },
+  },
+  {
+    docId: 'wo12', docType: 'workOrder',
+    data: { name: 'Vertex Assembly Line B', workCenterId: 'wc7', status: 'open', startDate: '2026-02-01', endDate: '2026-04-30' },
+  },
 ];
 
 @Injectable({ providedIn: 'root' })
@@ -46,6 +62,8 @@ export class WorkOrderService {
     { docId: 'wc3', docType: 'workCenter', data: { name: 'Konsulting Inc' } },
     { docId: 'wc4', docType: 'workCenter', data: { name: 'McMarrow Distribution' } },
     { docId: 'wc5', docType: 'workCenter', data: { name: 'Spartan Manufacturing' } },
+    { docId: 'wc6', docType: 'workCenter', data: { name: 'Apex Logistics' } },
+    { docId: 'wc7', docType: 'workCenter', data: { name: 'Vertex Industries' } },
   ]);
 
   private workOrders = signal<WorkOrder[]>(this.loadFromStorage());

@@ -187,6 +187,22 @@ public/
 
 ---
 
+### Architecture & Setup
+- *"Build an Angular 21 standalone work order timeline. It should have a horizontally scrollable grid with work centers as rows and months as columns. Each work order should render as a bar positioned by start/end date."*
+- *"Add a WorkOrderService with in-memory CRUD, localStorage persistence, and an overlap detection method."*
+
+### Styling & UX
+- *"Highlight the current month/week/day column with a light purple background and a badge in the header cell."*
+- *"Add a custom SVG pointer cursor on timeline cell hover."*
+
+### Testing
+- *"How do I setup playwright in angular application"*
+
+### Data
+- *"Add more seed data — at least 7 work centers and 12 work orders spread across different statuses and date ranges."*
+
+---
+
 ## Approach
 
 The timeline positioning is entirely CSS-percentage based. Given a visible date range (first column start → last column end), each work order bar's `left` and `width` are calculated as:

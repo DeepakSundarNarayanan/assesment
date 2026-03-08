@@ -280,10 +280,7 @@
     }
   }
 
-  /* Suppress the "Click to add dates" tooltip whenever a work-order menu is open */
-  &:has(.bar-menu) .bg-cell:hover::after {
-    display: none;
-  }
+  /* Suppress handled globally in styles.scss — see comment there */
 
   .bars-layer {
     position: absolute;
@@ -336,5 +333,49 @@
   .col-months-wrapper {
     flex: 1;
     position: relative;
+  }
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .app-navbar {
+    padding: 12px 16px;
+  }
+
+  .main-content {
+    padding: 16px;
+  }
+
+  .page-title {
+    font-size: 18px;
+  }
+
+  .timeline-wrapper {
+    margin-top: 12px;
+  }
+
+  /* Shrink the sticky work-center column so grid columns are visible */
+  .col-workcenter {
+    min-width: 120px;
+    max-width: 120px;
+    width: 120px;
+    padding: 0 10px;
+    font-size: 12px;
+
+    /* Truncate long names */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .grid-filler .col-workcenter {
+    min-width: 120px;
+    max-width: 120px;
+    width: 120px;
+  }
+
+  /* Suppress hover tooltip on touch screens */
+  .bg-cell:hover::after {
+    display: none !important;
   }
 }

@@ -12,9 +12,10 @@ test.describe('Work Order Timeline', () => {
 
   /**
    * Helper: click a bg-cell directly (bypasses browser hit-testing so bars don't intercept).
-   * Index 10 = September 2026 in Month view — safely beyond all seed work order bars.
+   * Index 12 = Sep 2026 (no prepend) or May 2026 (after scrollToToday prepends 4 cols) —
+   * safely beyond all seed work order bars in both cases.
    */
-  async function clickEmptyCell(page: any, rowIndex: number, cellIndex = 10) {
+  async function clickEmptyCell(page: any, rowIndex: number, cellIndex = 12) {
     await page.locator('.grid-row').nth(rowIndex).locator('.bg-cell').nth(cellIndex)
       .dispatchEvent('click');
   }
@@ -37,8 +38,8 @@ test.describe('Work Order Timeline', () => {
     await page.locator('.panel').waitFor({ state: 'visible' });
     await page.locator('.btn-save').click();
 
-    // Panel closes after 250ms slide-out animation
-    await expect(page.locator('.panel')).not.toBeVisible({ timeout: 3000 });
+    // Panel closes after 250ms slide-out animation + Angular re-render
+    await page.locator('.panel').waitFor({ state: 'detached', timeout: 5000 });
 
     // ── STEP 5: Bar appears on timeline
     const newBar = page.locator('.work-order-bar', { hasText: workOrderName });
@@ -83,14 +84,14 @@ test.describe('Work Order Timeline', () => {
 
   test('shows overlap error when work orders conflict', async ({ page }) => {
     // ── Create first work order at cell 10 on last row
-    await clickEmptyCell(page, -1, 10);
+    await clickEmptyCell(page, -1, 12);
     await expect(page.locator('.panel')).toBeVisible();
     await page.locator('.form-input[placeholder="Acme Inc."]').fill('Overlap Order A');
     await page.locator('.btn-save').click();
-    await expect(page.locator('.panel')).not.toBeVisible({ timeout: 3000 });
+    await page.locator('.panel').waitFor({ state: 'detached', timeout: 5000 });
 
     // ── Try to create a second order on the exact same cell → same date → overlaps
-    await clickEmptyCell(page, -1, 10);
+    await clickEmptyCell(page, -1, 12);
     await expect(page.locator('.panel')).toBeVisible();
     await page.locator('.form-input[placeholder="Acme Inc."]').fill('Overlap Order B');
     await page.locator('.btn-save').click();

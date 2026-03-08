@@ -29,8 +29,8 @@ describe('WorkOrderService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('getWorkCenters() returns 5 work centers', () => {
-    expect(service.getWorkCenters().length).toBe(5);
+  it('getWorkCenters() returns 7 work centers', () => {
+    expect(service.getWorkCenters().length).toBe(7);
   });
 
   it('getWorkOrders() falls back to seed data when localStorage is empty', () => {
